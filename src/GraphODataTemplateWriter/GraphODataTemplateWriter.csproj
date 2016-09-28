@@ -62,10 +62,13 @@
     <Compile Include="CodeHelpers\ObjC\CodeWriterObjC.cs" />
     <Compile Include="CodeHelpers\Python\CodeWriterPython.cs" />
     <Compile Include="CodeHelpers\Python\TypeHelperPython.cs" />
+    <Compile Include="CodeHelpers\Swift\CodeWriterSwift.cs" />
+    <Compile Include="CodeHelpers\Swift\TypeHelperSwift.cs" />
     <Compile Include="Extensions\FeatureExtensions.cs" />
     <Compile Include="PathWriters\CSharpPathWriter.cs" />
     <Compile Include="PathWriters\TypeScriptPathWriter.cs" />
     <Compile Include="PathWriters\GraphEndpointListPathWriter.cs" />
+    <Compile Include="PathWriters\SwiftPathWriter.cs" />
     <Compile Include="PathWriters\PythonPathWriter.cs" />
     <Compile Include="TemplateProcessor\CustomT4Host.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -111,6 +114,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include=".config\TemplateWriterSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include=".config\SwiftSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

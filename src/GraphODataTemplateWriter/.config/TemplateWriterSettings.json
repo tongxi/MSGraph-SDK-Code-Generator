@@ -1,9 +1,9 @@
 ﻿{
-    "AvailableLanguages": [ "Android", "ObjC", "CSharp", "Python", "TypeScript", "GraphEndpointList" ],
-    "TargetLanguage": "TypeScript",
+    "AvailableLanguages": [ "Android", "ObjC", "CSharp", "Python", "TypeScript", "GraphEndpointList", "Swift" ],
+    "TargetLanguage": "Swift",
     "Plugins": [ ],
-    "PrimaryNamespaceName": "com",
-    "NamespacePrefix": "com",
+    "PrimaryNamespaceName": "MSGraph",
+    "NamespacePrefix": "",
     "InitializeCollections": "false",
     "AllowShortActions": "false",
     "NamespaceOverride": "",
