@@ -1,0 +1,7 @@
+{
+  "TemplateMapping": {
+    "Swift": [
+           { "Template": "test", "SubProcessor": "Other", "Name": "test" }
+  ]
+  }
+}

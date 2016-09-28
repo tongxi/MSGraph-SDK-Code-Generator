@@ -74,3 +74,7 @@ ClientBin/
 *sw*
 node_modules/
 bower_components/
+
+# Swift
+!Templates/Swift/*
+!*[Ss]wift**
