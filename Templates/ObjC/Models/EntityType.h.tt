@@ -32,7 +32,7 @@ foreach(var prop in entity.Properties.Where(prop => GetObjCTypeIdentifier(prop)!
 foreach (var prop in entity.Properties.Where(prop => prop.IsCollection && prop.LongDescriptionContains("enumerable")))
 {
 #>
-- (<#=GetObjCTypeForVarDeclaration(prop,true)#>) <#=GetObjCProperty(prop)#>:(NSInteger)index;
+- (<#=GetObjCTypeForVarDeclaration(prop,true)#>) <#=GetObjCProperty(prop)#>:(NSInteger)index jason;
 <#
 }
 

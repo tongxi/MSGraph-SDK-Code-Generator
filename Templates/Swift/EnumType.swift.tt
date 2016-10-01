@@ -1,5 +1,7 @@
 <# // Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information. #>
 <#@ template debug="true" hostspecific="true" language="C#" #>
-<#@ output extension="\\" #>
-var className="xxx";
-hello world
+<#@ include file="SharedSwift.template.tt"#>
+<#
+var entity = host.CurrentType.AsOdcmEnum();
+#>
+import Foundation

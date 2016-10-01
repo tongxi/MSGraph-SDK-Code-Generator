@@ -1,7 +1,10 @@
 {
   "TemplateMapping": {
+    "Shared" :  [ ],
     "Swift": [
-           { "Template": "test", "SubProcessor": "Other", "Name": "test" }
+           { "Template": "EntityType", "SubProcessor": "EntityType", "Type": "Model", "Name": "EntityType<Class>-yo" },
+           { "Template": "test", "SubProcessor": "ComplexType", "Type": "Model", "Name": "Complex<Class>-yo" },
+           { "Template": "EnumType", "SubProcessor": "EnumType", "Type": "Model", "Name": "Enum<Class>-yo" }
   ]
   }
 }

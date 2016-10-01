@@ -11,19 +11,19 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
 
         public CodeWriterSwift(OdcmModel model) : base(model) { }
 
-        public override string WriteClosingCommentLine()
+        public override String WriteOpeningCommentLine()
         {
-            throw new NotImplementedException();
+            return "// ------------------------------------------------------------------------------" + this.NewLineCharacter;
+        }
+
+        public override String WriteClosingCommentLine()
+        {
+            return "// ------------------------------------------------------------------------------";
         }
 
         public override string WriteInlineCommentChar()
         {
-            throw new NotImplementedException();
-        }
-
-        public override string WriteOpeningCommentLine()
-        {
-            throw new NotImplementedException();
+            return "//  ";
         }
     }
 
