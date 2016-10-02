@@ -3,7 +3,7 @@
     "TargetLanguage": "Swift",
     "Plugins": [ ],
     "PrimaryNamespaceName": "MSGraph",
-    "NamespacePrefix": "",
+    "NamespacePrefix": "MSGraph",
     "InitializeCollections": "false",
     "AllowShortActions": "false",
     "NamespaceOverride": "",

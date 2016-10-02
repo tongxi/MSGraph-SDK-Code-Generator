@@ -21,8 +21,8 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
           "#available", "#colorLiteral", "#column", "#else", "#elseif", "#endif", "#file", "#fileLiteral", "#function", "#if", "#imageLiteral", "#line", "#selector", "#sourceLocation",
           "associativity", "convenience", "dynamic", "didSet", "final", "get", "infix", "indirect", "lazy", "left", "mutating", "none", "nonmutating", "optional", "override", "postfix", "precedence", "prefix", "Protocol", "required", "right", "set", "Type", "unowned", "weak", "willSet",
         };
-      }     
-        
+      }
+
       public static string GetTypeString(this OdcmParameter parameter)
       {
           return GetTypeString(parameter.Type);
@@ -36,17 +36,14 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
       {
           if (type == null)
           {
-              return "id";
+              return "Any";
           }
           switch (type.Name) {
               case "String":
-                  return "String";
               case "Int32":
-                  return "int32";
               case "Int64":
-                  return "int64";
               case "Int16":
-                  return "int16";
+                  return type.Name;
               case "Guid":
                   return "String";
               case "Double":
@@ -55,13 +52,11 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
               case "DateTimeOffset":
                   return "Date";
               case "Binary":
-                  return "Data";
+                  return "String";
               case "Boolean":
-                  return "BOOL";
+                  return "Bool";
               case "Stream":
-                  return "NSStream";
-              case "Duration":
-                  return "Duration";
+                  return "Stream";
               default:
                   return type.Name.ToUpperFirstChar();
           }

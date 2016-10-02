@@ -1,0 +1,29 @@
+<# // Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information. #>
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedSwift.template.tt"#>
+<#
+CustomT4Host host          = (CustomT4Host) Host;
+CodeWriterSwift writer     = (CodeWriterSwift) host.CodeWriter;
+
+var model                   = host.CurrentModel;
+var entityTypes             = model.GetEntityTypes();
+var entitySet               = model.EntityContainer.Properties;
+
+var entity = host.CurrentType.AsOdcmClass();
+var baseEntity = entity.Base;
+#>
+import Foundation
+
+public struct <#= entity.Name.ToUpperFirstChar() #> {
+<# foreach(var prop in entity.Properties) { #>
+<# if (prop.IsCollection) { #>
+    public var <#= prop.Name #>: [<#= prop.Type.GetTypeString() #>]<# if (prop.IsNullable) { #>?<#}#>
+
+<# }
+else { #>
+    public var <#= prop.Name #>: <#= prop.Type.GetTypeString() #><# if (prop.IsNullable) { #>?<#}#>
+
+<# } #>
+<# } #>
+
+}

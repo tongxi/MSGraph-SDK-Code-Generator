@@ -1,0 +1,28 @@
+<# // Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information. #>
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedSwift.template.tt"#>
+<#
+//var entity = host.CurrentType.AsOdcmEnum();
+
+CustomT4Host host          = (CustomT4Host) Host;
+CodeWriterSwift writer     = (CodeWriterSwift) host.CodeWriter;
+
+var model                   = host.CurrentModel;
+var entityTypes             = model.GetEntityTypes();
+var entitySet               = model.EntityContainer.Properties;
+
+var entity = host.CurrentType.AsOdcmEnum();
+#>
+import Foundation
+
+public enum <#= entity.Name.ToUpperFirstChar() #>: Int {
+<# 
+foreach (var member in entity.Members) 
+{
+#>
+    case <#= member.Name #> = <#= member.Value #>
+<# 
+}
+#>
+
+}
