@@ -18,21 +18,28 @@ var baseEntity = entity.Base;
 import Foundation
 
 <# if (baseEntity == null) { #>
-public class <#= entity.Name.ToUpperFirstChar() #> {
-    public var json: Any?
+public class <#=writer.GetNamespacePrefix()#><#= entity.Name.ToUpperFirstChar() #>: <#=writer.GetNamespacePrefix()#>Base {
+
 }
 <# } else { #>
-public class <#= entity.Name.ToUpperFirstChar() #>: <#= baseEntity.Name.ToUpperFirstChar() #> {
+public class <#=writer.GetNamespacePrefix()#><#= entity.Name.ToUpperFirstChar() #>: <#=writer.GetNamespacePrefix()#><#= baseEntity.Name.ToUpperFirstChar() #> {
 
 <# foreach(var prop in entity.Properties) { #>
 <# if (prop.IsCollection) { #>
-    public var <#= prop.Name #>: [<#= prop.Type.GetTypeString() #>]<# if (prop.IsNullable) { #>?<#}#>
+    public var <#= prop.Name #>: [<#= prop.Type.GetTypeString() #>]<# if (prop.IsNullable) { #>?<#}#> {
+       get {
+          return super.getArray(elementName: "<#= prop.Name #>")
+       }
 <# }
 else { #>
-    public var <#= prop.Name #>: <#= prop.Type.GetTypeString() #><# if (prop.IsNullable) { #>?<#}#>
-<# } #>
-    
-<# } #>
+    public var <#= prop.Name #>: <#= prop.Type.GetTypeString() #><# if (prop.IsNullable) { #>?<#}#> {
+       get {
+          return super.getObject(elementName: "<#= prop.Name #>")<# if (!prop.IsNullable) { #>!<#}#>
 
+       }
+<# } #>
+    }
+
+<# } #>
 }
 <# } #>

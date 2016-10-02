@@ -1,0 +1,78 @@
+<# // Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information. #>
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedSwift.template.tt"#>
+<#
+CustomT4Host host          = (CustomT4Host) Host;
+CodeWriterSwift writer     = (CodeWriterSwift) host.CodeWriter;
+#>
+import Foundation
+
+public protocol GraphObjectConvertible {
+    func asJSON() throws -> Any
+    func readJSON(data: Data) throws
+    
+    init(json: Any)
+}
+
+public class <#=writer.GetNamespacePrefix()#>Base: GraphObjectConvertible {
+    private var json: Any?
+    public required init(json: Any) {
+        self.json = json
+    }
+    
+    public func asJSON() throws -> Any {
+        if let _ = json {
+            return json!
+        }
+        else {
+            throw MSGraphError.JSONFailure.null
+        }
+    }
+    
+    public func readJSON(data: Data) throws {
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+            self.json = json
+        }
+        else {
+            throw MSGraphError.JSONFailure.invalidJSON
+        }
+    }
+    
+    public func getObject<T>(elementName: String) -> T? {
+        if let jsonDict = json as? [String: Any] {
+            return jsonDict[elementName] as? T
+        }
+        return nil
+    }
+    
+    public func getObject<T: GraphObjectConvertible>(elementName: String) -> T? {
+        if let jsonDict = json as? [String: Any] {
+            return T(json: jsonDict[elementName])
+        }
+        return nil
+    }
+    
+    public func getArray<T>(elementName: String) -> [T] {
+        if let jsonDict = json as? [String: Any] {
+            var retArray = [T]()
+            let array = jsonDict[elementName] as! [T]
+            for element in array {
+                retArray.append(element)
+            }
+            return retArray
+        }
+        return []
+    }
+    
+    public func getArray<T: GraphObjectConvertible>(elementName: String) -> [T] {
+        if let jsonDict = json as? [String: Any] {
+            var retArray = [T]()
+            let array = jsonDict[elementName] as! [Any]
+            for element in array {
+                retArray.append(T(json: element))
+            }
+            return retArray
+        }
+        return []
+    }
+}

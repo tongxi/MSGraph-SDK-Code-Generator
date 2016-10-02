@@ -15,12 +15,12 @@ var entity = host.CurrentType.AsOdcmEnum();
 #>
 import Foundation
 
-public enum <#= entity.Name.ToUpperFirstChar() #>: Int {
+public enum <#=writer.GetNamespacePrefix()#><#= entity.Name.ToUpperFirstChar() #>: Int {
 <# 
 foreach (var member in entity.Members) 
 {
 #>
-    case <#= member.Name #> = <#= member.Value #>
+    case <#= member.Name.SanitizeName() #> = <#= member.Value #>
 <# 
 }
 #>

@@ -3,6 +3,11 @@
 namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using Microsoft.Graph.ODataTemplateWriter.Extensions;
+    using Microsoft.Graph.ODataTemplateWriter.Settings;
     using Vipr.Core.CodeModel;
 
     public class CodeWriterSwift : CodeWriterBase
@@ -24,6 +29,10 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
         public override string WriteInlineCommentChar()
         {
             return "//  ";
+        }
+        public string GetNamespacePrefix()
+        {
+            return ConfigurationService.Settings.NamespacePrefix;
         }
     }
 
