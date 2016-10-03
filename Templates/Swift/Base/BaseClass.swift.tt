@@ -7,14 +7,14 @@ CodeWriterSwift writer     = (CodeWriterSwift) host.CodeWriter;
 #>
 import Foundation
 
-public protocol GraphObjectConvertible {
+public protocol MSGraphObjectConvertible {
     func asJSON() throws -> Any
     func readJSON(data: Data) throws
     
     init(json: Any)
 }
 
-public class <#=writer.GetNamespacePrefix()#>Base: GraphObjectConvertible {
+public class <#=writer.GetNamespacePrefix()#>Base: MSGraphObjectConvertible {
     private var json: Any?
     public required init(json: Any) {
         self.json = json
