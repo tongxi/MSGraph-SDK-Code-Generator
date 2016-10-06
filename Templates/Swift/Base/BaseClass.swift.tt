@@ -45,7 +45,7 @@ public class <#=writer.GetNamespacePrefix()#>Base: MSGraphObjectConvertible {
         return nil
     }
     
-    public func getObject<T: GraphObjectConvertible>(elementName: String) -> T? {
+    public func getObject<T: MSGraphObjectConvertible>(elementName: String) -> T? {
         if let jsonDict = json as? [String: Any] {
             return T(json: jsonDict[elementName])
         }
@@ -64,7 +64,7 @@ public class <#=writer.GetNamespacePrefix()#>Base: MSGraphObjectConvertible {
         return []
     }
     
-    public func getArray<T: GraphObjectConvertible>(elementName: String) -> [T] {
+    public func getArray<T: MSGraphObjectConvertible>(elementName: String) -> [T] {
         if let jsonDict = json as? [String: Any] {
             var retArray = [T]()
             let array = jsonDict[elementName] as! [Any]

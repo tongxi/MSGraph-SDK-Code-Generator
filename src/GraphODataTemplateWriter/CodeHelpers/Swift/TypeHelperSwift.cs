@@ -83,8 +83,27 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
             return name.ToUpperFirstChar();
       }
 
+        public static bool IsComplex(this OdcmProperty property)
+        {
+            return property.Projection.Type.IsComplex();
+        }
 
+        public static bool IsComplex(this OdcmParameter property)
+        {
+            string t = property.GetTypeString();
+            return t.IsComplex();
+        }
 
+        public static bool IsComplex(this OdcmType type)
+        {
+            string t = type.GetTypeString();
+            return t.IsComplex();
+        }
+
+        public static bool IsComplex(this string t)
+        {
+            return !TypeHelperSwift.SimpleTypes.Contains(t);
+        }
 
     }
 }

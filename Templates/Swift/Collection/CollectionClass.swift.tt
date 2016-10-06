@@ -1,0 +1,23 @@
+<# // Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information. #>
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedSwift.template.tt"#>
+<#
+CustomT4Host host          = (CustomT4Host) Host;
+CodeWriterSwift writer     = (CodeWriterSwift) host.CodeWriter;
+#>
+
+import Foundation
+public class <#=writer.GetNamespacePrefix()#>Collection<T: MSGraphObjectConvertible>: <#=writer.GetNamespacePrefix()#>Base {
+
+    var value: [T] {
+        get {
+            return super.getArray(elementName: "value")
+        }
+    }
+
+    var nextList: String? {
+        get {
+            return super.getObject(elementName: "@odata.nextLink")
+        }
+    }
+}

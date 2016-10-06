@@ -6,7 +6,8 @@
            { "Template": "ComplexType", "SubProcessor": "ComplexType", "Type": "Model", "Name": "<Class>" },
            { "Template": "EnumType", "SubProcessor": "EnumType", "Type": "Model", "Name": "<Class>" },
            { "Template": "BaseClass", "SubProcessor": "Other", "Name": "Base" },
-           { "Template": "ErrorType", "SubProcessor": "Other", "Name": "Error" }
+           { "Template": "ErrorType", "SubProcessor": "Other", "Name": "Error" },
+           { "Template": "CollectionClass", "SubProcessor": "Other", "Name": "Collection" }
   ]
   }
 }
