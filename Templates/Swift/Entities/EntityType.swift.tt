@@ -27,23 +27,23 @@ public class <#=writer.GetNamespacePrefix()#><#= entity.Name.ToUpperFirstChar() 
 <# foreach(var prop in entity.Properties) { #>
 
 <# if (prop.IsCollection && prop.Type.IsComplex()) { #> 
- public var <#= prop.Name #>: <#=writer.GetNamespacePrefix()#>Collection<<#= prop.Type.GetTypeString() #>><# if (prop.IsNullable) { #>?<#}#> {
+ public var <#= prop.Name.SanitizeName() #>: <#=writer.GetNamespacePrefix()#>Collection<<#= prop.Type.GetTypeString() #>><# if (prop.IsNullable) { #>?<#}#> {
         get {
-            return super.getObject(elementName: "<#= prop.Name #>")<# if (prop.IsNullable == false) { #>!<#}#>
+            return super.getObject(elementName: "<#= prop.Name.SanitizeName() #>")<# if (prop.IsNullable == false) { #>!<#}#>
         }
 
 <#  }
     else if (prop.IsCollection && prop.Type.IsComplex() == false) {  #>
-public var <#= prop.Name #>: [<#= prop.Type.GetTypeString() #>] {
+public var <#= prop.Name.SanitizeName() #>: [<#= prop.Type.GetTypeString() #>] {
         get {
-            return super.getArray(elementName: "<#= prop.Name #>")
+            return super.getArray(elementName: "<#= prop.Name.SanitizeName() #>")
         }
 
 <#  }
     else {   #>
-public var <#= prop.Name #>: <#= prop.Type.GetTypeString() #><# if (prop.IsNullable) { #>?<#}#> {
+public var <#= prop.Name.SanitizeName() #>: <#= prop.Type.GetTypeString() #><# if (prop.IsNullable) { #>?<#}#> {
        get {
-          return super.getObject(elementName: "<#= prop.Name #>")<# if (!prop.IsNullable) { #>!<#}#>
+          return super.getObject(elementName: "<#= prop.Name.SanitizeName() #>")<# if (!prop.IsNullable) { #>!<#}#>
 
        }
 

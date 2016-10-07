@@ -22,6 +22,7 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
                 "as", "Any", "catch", "false", "is", "nil", "rethrows", "super", "self", "Self", "throw", "throws", "true", "try",
                 "#available", "#colorLiteral", "#column", "#else", "#elseif", "#endif", "#file", "#fileLiteral", "#function", "#if", "#imageLiteral", "#line", "#selector", "#sourceLocation",
                 "associativity", "convenience", "dynamic", "didSet", "final", "get", "infix", "indirect", "lazy", "left", "mutating", "none", "nonmutating", "optional", "override", "postfix", "precedence", "prefix", "Protocol", "required", "right", "set", "Type", "unowned", "weak", "willSet",
+                "operator"
             };
         }
 
@@ -70,6 +71,8 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
                   return "Bool";
               case "Stream":
                   return "Stream";
+              case "Json":
+                  return "Any";
               default:
                   return Prefix + type.Name.ToUpperFirstChar();
           }
@@ -78,9 +81,9 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Swift
       public static string SanitizeName(this string name) {
             if (GetReservedNames().Contains(name))
             {
-                return string.Concat(name.ToUpperFirstChar(), DefaultReservedPostfix);
+                return string.Concat(name, DefaultReservedPostfix);
             }
-            return name.ToUpperFirstChar();
+            return name;
       }
 
         public static bool IsComplex(this OdcmProperty property)
