@@ -1,0 +1,36 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var enums = model.GetEnumTypes();
+
+foreach(var e in enums)
+{
+
+#>
+#include "<#=writer.GetPrefix() + e.Name.ToUpperFirstChar()#>.h"
+<#
+
+}
+
+var complexTypes = model.GetComplexTypes().Where(complexType => !complexType.LongDescriptionContains("methodResponse"));
+
+foreach(var c in complexTypes)
+{
+
+#>
+#include "<#=writer.GetPrefix() + c.Name.ToUpperFirstChar()#>.h"
+<#
+
+}
+
+var entityTypes = model.GetEntityTypes();
+
+foreach(var et in entityTypes)
+{
+#>
+#include "<#=writer.GetPrefix() + et.Name.ToUpperFirstChar()#>.h"
+<#
+
+}
+
+#>

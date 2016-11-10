@@ -1,0 +1,61 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ output extension="\\" #>
+<#
+CustomT4Host host   = (CustomT4Host)Host;
+OdcmModel model     = host.CurrentModel;
+var writer          = (CodeWriterQt)host.CodeWriter;
+var currentType = host.CurrentType;
+#>
+<#+
+    public string ClassTypeName(CodeWriterQt w, OdcmObject c) {
+        if (c is OdcmMethod) {
+            return w.GetPrefix() + c.AsOdcmMethod().Class.Name.ToUpperFirstChar();
+        } else if (c is OdcmProperty && c.AsOdcmProperty().Class is OdcmServiceClass) {
+            return w.GetPrefix() + c.AsOdcmProperty().Type.Name.ToUpperFirstChar();
+        } else if (c is OdcmProperty) {
+            return w.GetPrefix() + c.AsOdcmProperty().Class.Name.ToUpperFirstChar();
+        }
+        return w.GetPrefix() + c.Name.ToUpperFirstChar();
+    }
+
+    public string TypeName(CodeWriterQt w, OdcmObject c) {
+        if (c is OdcmMethod) {
+            return w.GetPrefix() + c.Name.Substring(c.Name.IndexOf(".") + 1).ToUpperFirstChar();
+        } else if (c is OdcmProperty && c.AsOdcmProperty().IsCollection) {
+            return w.GetPrefix() + c.AsOdcmProperty().Type.Name.ToUpperFirstChar();
+        } else if (c is OdcmProperty) {
+            return ClassTypeName(w, c) + c.AsOdcmProperty().Type.Name.ToUpperFirstChar();
+        }
+        return w.GetPrefix() + c.Name.ToUpperFirstChar();
+    }
+
+    public string TypeCollectionResponse(CodeWriterQt w, OdcmObject c) {
+        return w.GetPrefix() + CollectionResponsePostfix() + "<" + TypeName(w, c) + ">";
+    }
+
+    public string TypeRequest(CodeWriterQt w, OdcmObject c) {
+        return TypeName(w, c) + "Request";
+    }
+    
+    public string TypeCollectionRequest(CodeWriterQt w, OdcmObject c) {
+        return TypeName(w, c) + "CollectionRequest";
+    }
+
+    public string TypeCollectionRequestBuilder(CodeWriterQt w, OdcmObject c) {
+        return TypeCollectionRequest(w, c) + "Builder";
+    }
+
+    public string TypeRequestBuilder(CodeWriterQt w, OdcmObject c) {
+        return TypeRequest(w, c) + "Builder";
+    }
+
+    public string CollectionResponsePostfix() {
+        return "CollectionResponse";
+    }
+
+
+    public string CollectionResponseInclude(CodeWriterQt w) {
+        return w.GetPrefix() + CollectionResponsePostfix() + ".h"; 
+    }
+
+#>

@@ -1,0 +1,48 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var prop = host.CurrentType.AsOdcmProperty();
+var innerEntity = prop.Type;
+
+var propName = writer.GetPrefix() + prop.Name.ToUpperFirstChar();
+var propRequestBuilder = propName + "CollectionRequestBuilder";
+
+var innerEntityType = writer.GetPrefix() + innerEntity.Name.ToUpperFirstChar();
+var entityRequestBuilder = innerEntityType + "RequestBuilder";
+var entityRequest = innerEntityType + "Request";
+#>
+#pragma once
+#include "<#=writer.GetPrefix()#>Models.h"
+#include "ODCollectionRequest.h"
+#include "ODODataEntities.h"
+#include "ODQueryOption.h"
+#include "<#=CollectionResponseInclude(writer)#>"
+
+class <#=TypeCollectionRequest(writer,currentType)#> : public ODCollectionRequest<<#=TypeCollectionResponse(writer, currentType)#>> {
+public:
+
+    <#=TypeCollectionRequest(writer,currentType)#>(const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider)
+        : ODCollectionRequest(url, options, httpProvider, authProvider)
+    {
+    }
+
+<# 
+    if (prop.LongDescriptionContains("enumerable"))
+    {
+#>
+    <#=TypeCollectionRequest(writer,currentType)#> skipToken(const QString& token) {
+        <#=TypeCollectionRequest(writer,currentType)#> pageRequest(getRequestURL(), mOptions, getHttpProvider(), getAuthProvider());
+        pageRequest.addOption(std::make_shared<ODQueryOption>("skipToken", token));
+        return pageRequest;
+    }
+<#
+    }
+    if (prop.LongDescriptionContains("writable"))
+    {
+#>
+//- (ODURLSessionDataTask *)add<#=innerEntity.Name.ToUpperFirstChar()#>:(<#=innerEntityType#>*)<#=innerEntity.Name.ToLowerFirstChar()#> withCompletion:(<#=innerEntityType#>CompletionHandler)completionHandler;
+
+<#
+    }
+#>
+};

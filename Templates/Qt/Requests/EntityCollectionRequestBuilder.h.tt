@@ -1,0 +1,35 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var prop = host.CurrentType.AsOdcmProperty();
+var innerEntity = prop.Type;
+var innerEntityType = writer.GetPrefix() + innerEntity.Name.ToUpperFirstChar();
+
+var propName = writer.GetPrefix() + prop.Name.ToUpperFirstChar() + "CollectionRequestBuilder";
+#>
+#pragma once
+#include "<#=writer.GetPrefix()#>Models.h"
+#include "ODCollectionRequestBuilder.h"
+#include "<#=TypeCollectionRequest(writer,currentType)#>.h"
+
+class <#=TypeRequestBuilder(writer, innerEntity)#>;
+
+class <#=TypeCollectionRequestBuilder(writer, prop)#> : ODCollectionRequestBuilder 
+{
+public:
+    <#=TypeCollectionRequestBuilder(writer, prop)#>(const QUrl& url, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider) 
+        :ODCollectionRequestBuilder(url, httpProvider, authProvider)
+    {
+    }
+
+    <#=TypeCollectionRequest(writer,prop)#> request();
+    <#=TypeCollectionRequest(writer,prop)#> requestWithOptions(const QList<std::shared_ptr<ODOption>>& options);
+<#  
+    if (prop.LongDescriptionContains("queryable"))
+    {      
+#>
+    <#=TypeRequestBuilder(writer, innerEntity)#> <#=innerEntity.Name.ToLowerFirstChar()#>(const QString& <#=innerEntity.Name.ToLowerFirstChar()#>);
+<#
+    }
+#>
+};

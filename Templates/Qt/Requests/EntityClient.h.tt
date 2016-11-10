@@ -1,0 +1,94 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var containerProps = model.EntityContainer.Properties;
+var entityName = writer.GetPrefix() + "Client"; 
+#>
+#pragma once
+#include <memory>
+#include <QUrl>
+
+#include "<#=writer.GetPrefix()#>Models.h"
+#include "ODHttpProvider.h"
+#include "ODAuthProvider.h"
+#include "ODODataEntities.h"
+
+<#foreach(var prop in containerProps)
+{
+#>
+#include "<#=TypeCollectionRequestBuilder(writer, prop)#>.h"
+<#}#>
+
+<#=writer.GetHeaderDoc(entityName)#>
+class <#=entityName#>
+{
+public:
+    <#=entityName#>(const QUrl& url, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider) {
+        mBaseUrl = url;
+        mHttpProvider = httpProvider;
+        mAuthProvider = authProvider;
+    }
+
+    const QUrl& getBaseUrl() const {
+        return mBaseUrl;
+    }
+
+    void setBaseUrl(const QUrl& baseUrl) {
+        mBaseUrl = baseUrl;
+    }
+
+    std::shared_ptr<ODHttpProvider> getHttpProvider() const {
+        return mHttpProvider;
+    }
+
+    std::shared_ptr<ODAuthProvider> getAuthProvider() const {
+        return mAuthProvider;
+    }
+
+
+<#
+
+foreach(var prop in containerProps)
+{
+    var propertyName = prop.Type.GetTypeString();
+    if(prop.IsCollection())
+    {
+#>
+    /**
+     * @brief Gets the collection of <#=propertyName#> objects.
+     *
+     * @return The request builder for the collection of <#=propertyName#> objects
+     */
+    <#=TypeCollectionRequestBuilder(writer, prop)#> get<#=propertyName#>s() const;
+     
+     /**
+     * @brief Gets a single <#=propertyName#>.
+     *
+     * @param <#=prop.Name#>id The id of the <#=propertyName#> to retrieve.
+    
+     * @return The request builder for the <#=propertyName#> object
+     */
+    <#=TypeRequestBuilder(writer, prop)#> get<#=propertyName#>(const QString& <#=prop.Name#>Id) const;
+<#
+    }
+    else
+    {
+
+#>
+
+    /**
+     * Gets <#=TypeRequestBuilder(writer, prop)#>.
+     *
+     * @return the <#=prop.Type.GetTypeString()#>.
+     */
+    <#=TypeRequestBuilder(writer, prop)#>   get<#=propertyName#>() const;
+<#  
+    }
+}
+#>
+
+private:
+    QUrl mBaseUrl;
+    std::shared_ptr<ODHttpProvider> mHttpProvider;
+    std::shared_ptr<ODAuthProvider> mAuthProvider;
+};

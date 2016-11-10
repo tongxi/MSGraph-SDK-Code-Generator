@@ -1,0 +1,32 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+
+var prop = host.CurrentType.AsOdcmProperty();
+var innerEntity = prop.Type;
+
+var innerEntityType = writer.GetPrefix() + innerEntity.Name.ToUpperFirstChar();
+var entityRequest = innerEntityType + "RequestBuilder";
+
+
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QString>
+#include <QJsonArray>
+
+<# 
+    if (prop.LongDescriptionContains("enumerable"))
+    {
+#>
+
+<#
+    }
+    if (prop.LongDescriptionContains("writable"))
+    {
+#>
+<#
+    }
+#>

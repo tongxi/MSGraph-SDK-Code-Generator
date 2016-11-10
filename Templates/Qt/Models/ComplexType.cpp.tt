@@ -1,0 +1,76 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var entity = host.CurrentType.AsOdcmClass();
+var collectionProperties = entity.Properties.Where(prop => prop.IsCollection && prop.LongDescriptionContains("enumerable"));
+#>
+
+#include "ODModels.h"
+
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QVariant>
+
+void <#=ClassTypeName(writer, entity)#>::read(const QJsonObject& json) {
+<#
+foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
+{
+    if(prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection())
+    {        
+#>
+    if (json.contains("<#=prop.Name#>")) {
+        m<#=prop.GetToUpperFirstCharName()#> = std::make_shared<<#=prop.GetFullType()#>>();
+        m<#=prop.GetToUpperFirstCharName()#>->read(json["<#=prop.Name#>"].toObject());
+    }
+<#  } else if (!prop.IsCollection()) {
+    var readFrom = "json[\"" + prop.Name + "\"]";
+#>
+    m<#=prop.GetToUpperFirstCharName()#> = <#=prop.GetQTJsonParserConverterFunction(readFrom)#>;
+<#  } else {#>
+    if(json.contains("<#=prop.Name#>@odata.nextLink")) {
+        m<#=prop.GetToUpperFirstCharName()#>.setNextLink(json["<#=prop.Name#>@odata.nextLink"].toString());
+    }
+    foreach(const QJsonValue& value, json["<#=prop.Name#>"].toArray()) {
+        <#if(prop.IsComplex() && !prop.IsSystem()) {#>
+        <#=prop.Type.GetTypeString()#> data;
+        data.read(value.toObject());
+        m<#=prop.GetToUpperFirstCharName()#>.append(data);
+        <#} else {#>
+        m<#=prop.GetToUpperFirstCharName()#>.append(<#=prop.GetQTJsonParserConverterFunction("value")#>);
+        <#}#>
+    }
+<#}
+}#>
+}
+
+void <#=ClassTypeName(writer, entity)#>::write(QJsonObject& json) const {
+<#
+foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
+{
+    if(prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection())
+    {        
+#>
+    if (m<#=prop.GetToUpperFirstCharName()#>) {
+        QJsonObject <#=prop.Name#>;
+        m<#=prop.GetToUpperFirstCharName()#>->write(<#=prop.Name#>);
+        json["<#=prop.Name#>"] = <#=prop.Name#>;
+    }
+<#  } else if (!prop.IsCollection()) {
+    var readFrom = "m" + prop.GetToUpperFirstCharName();
+#>
+    json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(readFrom)#>;
+<#  } else {#>
+    QJsonArray <#=prop.Name#>;
+    foreach(const <#=prop.Type.GetTypeString()#>& value, m<#=prop.GetToUpperFirstCharName()#>) {
+<#      if(prop.IsComplex() && !prop.IsSystem()) {#>
+        QJsonObject jsonData;
+        value.write(jsonData);
+        <#=prop.Name#>.append(jsonData);
+<#      } else {#>
+        <#=prop.Name#>.append(<#=prop.GetQTTypeToJsonConverter("value")#>);
+<#      }#>
+    }
+    json["<#=prop.Name#>"] = <#=prop.Name#>;
+<#}
+}#>
+}

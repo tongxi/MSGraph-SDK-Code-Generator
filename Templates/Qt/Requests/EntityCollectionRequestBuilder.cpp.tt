@@ -1,0 +1,32 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+
+var prop = host.CurrentType.AsOdcmProperty();
+var innerEntity = prop.Type;
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+
+<#=TypeCollectionRequest(writer, prop)#> <#=TypeCollectionRequestBuilder(writer, prop)#>::request()
+{
+    return requestWithOptions(QList<std::shared_ptr<ODOption>>());
+}
+
+<#=TypeCollectionRequest(writer, prop)#> <#=TypeCollectionRequestBuilder(writer, prop)#>::requestWithOptions(const QList<std::shared_ptr<ODOption>>& options)
+{
+    return <#=TypeCollectionRequest(writer, currentType)#>(getRequestURL(), options, getHttpProvider(), getAuthProvider());
+}
+<#  
+    if (prop.LongDescriptionContains("queryable"))
+    {      
+#>
+
+<#=TypeRequestBuilder(writer, innerEntity)#> <#=TypeCollectionRequestBuilder(writer, prop)#>::<#=innerEntity.Name.ToLowerFirstChar()#>(const QString& <#=innerEntity.Name.ToLowerFirstChar()#>)
+{
+    return <#=TypeRequestBuilder(writer, innerEntity)#>(getRequestUrlWithAdditionalSegment(<#=innerEntity.Name.ToLowerFirstChar()#>), getHttpProvider(), getAuthProvider());
+}
+<#
+    } 
+
+#>

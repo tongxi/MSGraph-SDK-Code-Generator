@@ -1,0 +1,65 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+
+var entity = host.CurrentType.AsOdcmClass();
+var entityName = writer.GetPrefix() + entity.Name.ToUpperFirstChar() + "Request";
+
+var typeName = writer.GetPrefix() + entity.Name.ToUpperFirstChar();
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QBuffer>
+
+void <#=entityName#>::get(AsyncCallback<<#=typeName#>> predicate) {
+    request("GET", nullptr, ODHttpHeaderCollection(),
+        [predicate](AsyncResult<std::shared_ptr<QNetworkReply>> networkReply) {
+            if (networkReply.failed()) {
+                predicate(AsyncResult<<#=typeName#>>(networkReply.getError()));
+                return;
+            }
+
+            QString strReply = (QString)networkReply.get()->readAll();
+            QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+            <#=typeName#> data;
+            data.read(jsonResponse.object());
+            predicate(AsyncResult<<#=typeName#>>(data));
+        }
+    );
+}
+
+void <#=entityName#>::update(const <#=typeName#>& requestData,
+                             AsyncCallback<<#=typeName#>>  predicate) {
+    QJsonObject data;
+    requestData.write(data);
+
+    QJsonDocument document(data);
+    std::shared_ptr<QByteArray> binaryData = std::make_shared<QByteArray>(document.toJson());
+
+    request("PATCH", std::shared_ptr<QIODevice>(new QBuffer(binaryData.get())), ODHttpHeaderCollection(),
+        [predicate, binaryData](AsyncResult<std::shared_ptr<QNetworkReply>> networkReply) {
+            if (networkReply.failed()) {
+                predicate(AsyncResult<<#=typeName#>>(networkReply.getError()));
+                return;
+            }
+
+            QString strReply = (QString)networkReply.get()->readAll();
+            QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+            <#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#> data;
+            data.read(jsonResponse.object());
+            predicate(AsyncResult<<#=typeName#>>(data));
+        }
+    );
+}
+
+void <#=entityName#>::remove()
+{
+    request("DELETE", nullptr, ODHttpHeaderCollection(),
+        [](AsyncResult<std::shared_ptr<QNetworkReply>> /*networkReply*/)
+        {
+            //TODO: callback in here
+        }
+    );
+}

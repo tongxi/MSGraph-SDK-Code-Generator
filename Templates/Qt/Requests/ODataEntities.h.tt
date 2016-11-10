@@ -1,0 +1,71 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+#pragma once
+#include "<#=writer.GetPrefix()#>Collection.h"
+
+<#
+var entityTypes = model.GetEntityTypes();
+var entitySet = model.EntityContainer.Properties;
+var classes = new HashSet<string>();
+
+
+foreach(var es in entitySet)
+{
+    classes.Add("#include \"" + TypeCollectionRequestBuilder(writer, es) +".h\"");
+    classes.Add("#include \"" + TypeCollectionRequest(writer, es) + ".h\"");
+}
+
+foreach(var et in entityTypes)
+{
+
+    classes.Add("#include \"" + writer.GetPrefix() + et.Name.ToUpperFirstChar() + "RequestBuilder.h\"");
+    classes.Add("#include \"" + writer.GetPrefix() + et.Name.ToUpperFirstChar() + "Request.h\"");
+
+    foreach(var prop in et.NavigationProperties())
+    {
+        classes.Add("#include \"" + TypeCollectionRequestBuilder(writer, prop) +".h\"");
+        classes.Add("#include \""  + TypeCollectionRequest(writer, prop) + ".h\"");
+    }
+
+    foreach(var prop in et.GetProperties(typeName:"Stream"))
+    {
+        //classes.Add("#include \"" + writer.GetPrefix() + prop.Class.Name.ToUpperFirstChar() + prop.Name.ToUpperFirstChar() + "Request.h\"");
+    }
+
+    foreach(var func in et.Methods)
+    {
+        var baseName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar() + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar();
+        if (func.LongDescriptionContains("specialCollection"))
+        {
+            classes.Add("#include \"" + baseName + "Collection.h\"");
+        }
+        classes.Add("#include \"" + baseName + "RequestBuilder.h\"");
+        classes.Add("#include \"" + baseName + "Request.h\"");
+    }
+
+    foreach(var complexType in et.GetProperties(longDescriptionMatches:"navigable").Where(prop => prop.Type is OdcmClass))
+    {
+        var baseName = writer.GetPrefix() + complexType.Type.Name.ToUpperFirstChar(); 
+        classes.Add("#include \"" + baseName + "RequestBuilder.h\"");
+        classes.Add("#include \"" + baseName + "Request.h\"");
+    }
+}
+
+foreach(var complexType in model.GetComplexTypes())
+{
+    //TODO: Streams support here
+    /*foreach(var streamProperty in complexType.GetProperties(typeName:"Stream"))
+    {
+        classes.Add("#include \"" + writer.GetPrefix() + streamProperty.Class.Name.ToUpperFirstChar() + streamProperty.Name.ToUpperFirstChar() + "Request.h\"");
+    }*/
+}
+
+foreach(var importClass in classes)
+{
+#>
+<#=importClass#>
+<#
+}
+#>
+//TODO: Read correct prefix
+#include "<#=writer.GetPrefix()#>OneDriveClient.h" 

@@ -1,0 +1,65 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+
+var func = host.CurrentType.AsOdcmMethod();
+var entityName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar();
+var method = (func.IsFunction()) ? "GET" : "POST";
+var methodName = "request"; 
+var requestType = entityName + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Request";
+var requestBuilderType = requestType + "Builder";
+#>
+#pragma once
+#include <memory>
+#include <QUrl>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include "<#=writer.GetPrefix()#>Models.h"
+#include "ODRequestBuilder.h"
+#include "<#=requestType#>.h"
+
+class <#=requestBuilderType#> : public ODRequestBuilder {
+public:
+<#
+if (func.Parameters.Count > 0)
+{
+#>
+    <#=requestBuilderType#>(<#=writer.GetParamsString(func.Parameters)#>, const QUrl& url, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider);
+<#
+}
+else 
+{
+#>
+    <#=requestBuilderType#>(const QUrl& url, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider) 
+        :ODRequestBuilder(url, httpProvider, authProvider)
+    {
+    }
+<#
+}
+#>
+    <#=requestType#> request();
+
+    <#=requestType#> requestWithOptions(const QList<std::shared_ptr<ODOption>>& options);
+
+<#
+#>
+
+private:
+
+<#
+if (func.Parameters.Count > 0)
+{
+   foreach (var param in func.Parameters)
+    {
+        var paramTypeString = param.Type.GetTypeString();
+        if (param.Type.IsComplex())
+        {
+            paramTypeString = paramTypeString;
+        }
+#>
+    <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
+<#
+    }
+}
+#>
+};

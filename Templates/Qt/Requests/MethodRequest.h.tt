@@ -1,0 +1,64 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+#pragma once
+<#
+var func = host.CurrentType.AsOdcmMethod();
+var entityName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar();
+var requestType = entityName + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Request";
+var returnTypeObject = func.ReturnType.AsOdcmClass();
+var method = ((func.Verbs & OdcmAllowedVerbs.Get) != OdcmAllowedVerbs.Get) ? "POST" : "GET";
+var isAsync = func.LongDescriptionContains("async");
+var specialCollectionType = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar() + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Collection";
+var superClass = "";
+if (func.LongDescriptionContains("specialCollection"))
+{
+    superClass = "ODCollectionRequest<" + specialCollectionType + ">";
+#>
+#include "<#=specialCollectionType#>.h"
+class <#=specialCollectionType#>;
+<#
+}
+else 
+{
+    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : writer.GetPrefix() + "Request";
+}
+#>
+#include "ODODataEntities.h"
+
+#include <memory>
+#include <functional>
+#include <QNetworkReply>
+
+class <#=requestType#> : public <#=superClass#>
+{
+public:
+<#
+var methodParams = writer.GetParamsString(func.Parameters);
+if (func.Parameters.Count > 0)
+{
+    methodParams +=",";
+}
+#>
+    <#=requestType#>(<#=methodParams#> const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider);
+private:
+<#
+if (func.Parameters.Count > 0)
+{
+#>
+
+<#
+    foreach (var param in func.Parameters)
+    {
+        var paramTypeString = param.Type.GetTypeString();
+        if (param.Type.IsComplex())
+        {
+            paramTypeString = paramTypeString;
+        }
+#>
+    <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
+
+<#
+    }
+}
+#>
+};

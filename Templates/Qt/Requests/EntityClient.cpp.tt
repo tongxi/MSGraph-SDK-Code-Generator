@@ -1,0 +1,43 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var entityName = writer.GetPrefix() + "Client"; 
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include "<#=writer.GetPrefix()#>OneDriveClient.h"
+
+<#
+
+foreach(var prop in model.EntityContainer.Properties)
+{
+    var propertyName = prop.Type.GetTypeString();
+    if(prop.IsCollection())
+    {
+#>
+<#=TypeCollectionRequestBuilder(writer, prop)#>  <#=entityName#>::get<#=propertyName#>s() const {
+    QUrl url = getBaseUrl();
+    url.setPath(url.path() + "/" + "<#=prop.Name#>");
+
+    return <#=TypeCollectionRequestBuilder(writer, prop)#>(url, getHttpProvider(), getAuthProvider());
+}
+
+<#=TypeRequestBuilder(writer, prop)#> <#=entityName#>::get<#=propertyName#>(const QString& <#=prop.Name#>Id) const {
+    QUrl url = getBaseUrl();
+    url.setPath(url.path() + "/" + "<#=prop.Name#>" + "/" + <#=prop.Name#>Id);
+    return <#=TypeRequestBuilder(writer, prop)#>(url, getHttpProvider(), getAuthProvider());
+}
+<#  
+    }
+    else
+    {
+#>
+<#=TypeRequestBuilder(writer, prop)#> <#=entityName#>::get<#=propertyName#>() const {
+    QUrl url = getBaseUrl();
+    url.setPath(url.path() + "/" + "<#=prop.Name#>");
+    return <#=TypeRequestBuilder(writer, prop)#>(url, getHttpProvider(), getAuthProvider());
+}
+<#
+    }
+}
+#>

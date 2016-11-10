@@ -1,0 +1,53 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+#pragma once
+<#
+var entity = host.CurrentType.AsOdcmClass();
+var entityName = writer.GetPrefix() + entity.Name.ToUpperFirstChar() + "Request";
+var clasess = new List<string>();
+clasess.Add("ODURLSessionDataTask");
+
+foreach(var prop in entity.NavigationProperties())
+{
+	var fetcher = string.Empty;
+	fetcher = writer.GetPrefix() + prop.Type.Name.ToUpperFirstChar() + "RequestBuilder";
+
+	if(!clasess.Contains(fetcher)) clasess.Add(fetcher);
+
+	if(prop.IsCollection)
+	{
+		var collectionFetcher = writer.GetPrefix() + prop.Name.ToUpperFirstChar() + "CollectionRequestBuilder";
+
+		if(!clasess.Contains(collectionFetcher)) clasess.Add(collectionFetcher);
+	}
+}
+
+foreach(var propertyClass in clasess)
+{
+
+#>
+<#
+
+}
+
+#>
+#include "<#=writer.GetPrefix()#>Models.h"
+#include "ODRequest.h"
+#include "ODODataEntities.h"
+
+#include <functional>
+class <#=entityName#> : public ODRequest
+{
+public:
+    <#=entityName#>(const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider)
+        : ODRequest(url, options, httpProvider, authProvider)
+    {
+    }
+
+    void get(AsyncCallback<<#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>> predicate);
+
+    void update(const <#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>& entity,
+                AsyncCallback<<#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>> predicate);
+
+    void remove();
+};

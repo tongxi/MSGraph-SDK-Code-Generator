@@ -62,7 +62,10 @@
     <Compile Include="CodeHelpers\Python\TypeHelperPython.cs" />
     <Compile Include="Extensions\FeatureExtensions.cs" />
     <Compile Include="PathWriters\CSharpPathWriter.cs" />
+    <Compile Include="CodeHelpers\Qt\CodeWriterQt.cs" />
+    <Compile Include="CodeHelpers\Qt\TypeHelperQt.cs" />
     <Compile Include="PathWriters\JavaScriptPathWriter.cs" />
+    <Compile Include="PathWriters\QtPathWriter.cs" />
     <Compile Include="PathWriters\PythonPathWriter.cs" />
     <Compile Include="TemplateProcessor\CustomT4Host.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -90,6 +93,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".config\CSharpSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include=".config\QtSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include=".config\JavaScriptSettings.json">

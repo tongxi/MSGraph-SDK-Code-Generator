@@ -1,0 +1,79 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var func = host.CurrentType.AsOdcmMethod();
+var entityName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar();
+var method = (func.IsFunction()) ? "GET" : "POST";
+var methodName = "request"; 
+var requestType = entityName + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Request";
+var requestBuilderType = requestType + "Builder";
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include "<#=requestType#>.h"
+
+<#
+if (func.Parameters.Count > 0)
+{
+#>
+<#=requestBuilderType#>::<#=requestBuilderType#>(<#=writer.GetParamsString(func.Parameters)#>, const QUrl& url, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider)
+    :ODRequestBuilder(url, httpProvider, authProvider)
+{
+
+<#
+    foreach (var param in func.Parameters)
+    {
+#>
+        m<#=param.Name.ToUpperFirstChar()#> = <#=param.Name.ToLowerFirstChar()#>;
+<#
+    }
+#>
+}
+
+<#=requestType#> <#=requestBuilderType#>::request()
+{
+    return requestWithOptions(QList<std::shared_ptr<ODOption>>());
+}
+
+<#=requestType#> <#=requestBuilderType#>::requestWithOptions(const QList<std::shared_ptr<ODOption>>& options)
+{
+
+<#
+    var stringBuilder = new StringBuilder("return " + requestType + "(");
+    var firstParam = func.Parameters.First();
+    var spacesString = stringBuilder.ToString() + firstParam.Name.ToUpperFirstChar();
+    // adding the indent...
+    spacesString = spacesString.ToSpaces() + "    ";
+    foreach (var param in func.Parameters)
+    {
+        if (firstParam != param)
+        {
+            stringBuilder.Append(" ,");
+        } 
+        stringBuilder.Append("m"+ param.Name.ToUpperFirstChar());
+    }
+
+    stringBuilder.Append(", getRequestURL(), options, getHttpProvider(), getAuthProvider());"); 
+#>
+    <#=stringBuilder.ToString()#>
+}
+
+<# 
+    }
+    else 
+    {
+#>
+<#=requestType#> <#=requestBuilderType#>::request()
+{
+    return requestWithOptions(QList<std::shared_ptr<ODOption>>());
+}
+
+<#=requestType#> <#=requestBuilderType#>::requestWithOptions(const QList<std::shared_ptr<ODOption>>& options)
+{
+    return <#=requestType#>(getRequestURL(), options, getHttpProvider(), getAuthProvider());
+}
+
+<#
+    }
+    
+#>

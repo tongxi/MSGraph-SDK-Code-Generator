@@ -1,0 +1,130 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+
+<#
+var func = host.CurrentType.AsOdcmMethod();
+var entityName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar();
+var requestType = entityName + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Request";
+var returnType = func.ReturnType != null ? writer.GetPrefix() + func.ReturnType.Name.ToUpperFirstChar() : "void";
+var returnTypeObject = func.ReturnType.AsOdcmClass();
+//special method
+if (returnTypeObject != null && returnTypeObject.Properties.Any(prop => prop.IsCollection))
+{
+    var valuesProperty = returnTypeObject.Properties.First(prop => prop.IsCollection);
+    returnType = writer.GetPrefix() + valuesProperty.Type.Name.ToUpperFirstChar();
+}
+
+var method = ((func.Verbs & OdcmAllowedVerbs.Get) != OdcmAllowedVerbs.Get) ? "POST" : "GET";
+var isAsync = func.LongDescriptionContains("async");
+var specialCollectionType = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar() + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Collection";
+
+var superClass = "";
+if (func.LongDescriptionContains("specialCollection"))
+{
+    superClass = "ODCollectionRequest<" + specialCollectionType + ">";
+}
+else 
+{
+    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : writer.GetPrefix() + "Request";
+}
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+#include "<#=writer.GetPrefix()#>Models.h"
+#include <QNetworkReply>
+#include "ODQueryOption.h"
+<#
+if (func.LongDescriptionContains("specialCollection"))
+{
+#>
+#include "<#=specialCollectionType#>.h"
+<#
+}
+#>
+
+<#
+var methodParams = writer.GetParamsString(func.Parameters);
+if (func.Parameters.Count > 0)
+{
+    methodParams +=",";
+}
+#>
+<#=requestType#>::<#=requestType#>(<#=methodParams#> const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider)
+    :<#=superClass#>(url, options, httpProvider, authProvider)
+{
+<#
+    // if we are in a function not an action
+    if (method == @"GET")
+    {
+        foreach (var param in currentType.AsOdcmMethod().Parameters)
+        {
+#>
+        if (!<#=param.Name.ToLowerFirstChar()#>.isEmpty()) {
+            addOption(std::make_shared<ODQueryOption>("<#=param.Name#>", <#=param.Name.ToLowerFirstChar()#>));
+        }
+<#
+        }
+    }
+#>
+}
+
+<#
+string completionBlock;
+string completionHandler;
+string taskMethod;
+string taskType = "ODURLSessionDataTask *";
+if (func.IsCollection || func.LongDescriptionContains("specialCollection"))
+{
+
+    if (func.LongDescriptionContains("specialCollection"))
+    {
+        completionHandler = "(void (^)(" + specialCollectionType + " *response, " + requestType + " *nextRequest, NSError *error))";
+    }
+    else 
+    {
+        completionHandler = "(void (^)(ODCollection *response, " + requestType + " *nextRequest, NSError *error))";
+    }
+    var stringBuilder = new StringBuilder();
+    var baseIndents = "    ODURLSessionDataTask *task = [".ToSpaces();
+
+    stringBuilder.AppendLine("^(ODCollection *collectionResponse, NSError *error){");
+	string returnCollectionName = "collectionResponse";
+    if (func.LongDescriptionContains("specialColelction"))
+    {
+		returnCollectionName = "collection";
+		stringBuilder.AppendLine(baseIndents + "    " + specialCollectionType + " *" + returnCollectionName +"= nil;");
+        stringBuilder.AppendLine(baseIndents + "    if(collectionResponse){");
+        stringBuilder.AppendLine(baseIndents + "        " + returnCollectionName + " = [[" + specialCollectionType + " alloc] initWithCollection:collectionResponse];");
+        stringBuilder.AppendLine(baseIndents + "    }");
+    }   
+    stringBuilder.AppendLine(baseIndents + "    if(!error && "+ returnCollectionName + ".nextLink && completionHandler){");
+    stringBuilder.AppendLine(baseIndents + "            " + requestType + " *nextRequest = [[" + requestType + " alloc] initWithURL:" + returnCollectionName + ".nextLink");
+    stringBuilder.AppendLine(baseIndents + "                                                                                options:nil");
+    stringBuilder.AppendLine(baseIndents + "                                                                                client:self.client];");
+    stringBuilder.AppendLine(baseIndents + "        completionHandler(" + returnCollectionName + ", nextRequest, nil);");
+    stringBuilder.AppendLine(baseIndents + "    }");
+    stringBuilder.AppendLine(baseIndents + "    else if(completionHandler){");
+    stringBuilder.AppendLine(baseIndents + "        completionHandler(" + returnCollectionName + ", nil, error);");
+    stringBuilder.AppendLine(baseIndents + "    }");
+    stringBuilder.Append(baseIndents + "}");
+
+    completionBlock = stringBuilder.ToString();
+    taskMethod = "[self collectionTaskWithRequest:";
+    
+}
+else if(isAsync)
+{
+    
+    completionHandler = "(void (^)(" + returnType + " *response, ODAsyncOperationStatus *status, NSError *error))";
+    completionBlock = "completionHandler";
+    taskMethod = "[self asyncTaskWithRequest:";
+    taskType = "ODAsyncURLSessionDataTask *";
+}
+else 
+{
+    completionHandler = writer.GetNetworkCompletionBlock(returnType, "response"); 
+    completionBlock = "completionHandler";
+    taskMethod = "[self taskWithRequest:";
+}
+var indentSpace = ("    " + taskType + "task = " + taskMethod).ToSpaces();
+#>

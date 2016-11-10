@@ -1,0 +1,50 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var entity = host.CurrentType.AsOdcmClass();
+#>
+#pragma once
+#include <QJsonObject>
+#include <memory>
+
+#include "ODCollection.h"
+
+<#=writer.GetImportsClass(entity.Properties)#>
+
+<#=writer.GetInterfaceLine(entity, "ODObject")#>
+
+public:
+  virtual ~<#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>(){}
+
+<#
+foreach(var prop in entity.Properties)
+{
+  var type = (prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection()) ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+#>
+  
+  const <#=type#>& get<#=prop.GetToUpperFirstCharName()#>() const
+  {
+     return m<#=prop.GetToUpperFirstCharName()#>;
+  }
+
+  void set<#=prop.GetToUpperFirstCharName()#>(const <#=type#>& value) 
+  {
+     m<#=prop.GetToUpperFirstCharName()#> = value;
+  }
+<#
+}
+#>
+  virtual void read(const QJsonObject& json);
+  virtual void write(QJsonObject& json) const;
+private:
+<#
+foreach(var prop in entity.Properties)
+{
+  var type = (prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection()) ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+#>
+  <#=type#> m<#=prop.GetToUpperFirstCharName()#>; 
+<#
+}
+#>
+
+};

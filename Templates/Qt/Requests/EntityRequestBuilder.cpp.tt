@@ -1,0 +1,145 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ include file="SharedQt.template.tt"#>
+<#
+var entity = host.CurrentType.AsOdcmClass();
+var entityName = writer.GetPrefix() + entity.Name.ToUpperFirstChar();
+var entityRequestName = writer.GetPrefix() + entity.Name.ToUpperFirstChar() + "Request";
+#>
+
+#include "<#=writer.GetPrefix()#>ODataEntities.h"
+
+<#
+    foreach(var child in currentType.AsOdcmClass().Derived)
+    {
+        var childName = child.Name.ToCheckedCase();
+#>
+<#=TypeRequestBuilder(writer, child)#> <#=entityName#>RequestBuilder::<#=childName.ToLowerFirstChar()#>() {
+    return new <#=TypeRequestBuilder(writer, child)#>(getRequestUrlWithAdditionalSegment("<#=child.Name#>"), getHttpProvider(), getAuthProvider());
+}
+<#
+    }
+#>
+
+<#
+foreach(var prop in entity.NavigationProperties())
+{
+    if(prop.IsCollection)
+    {
+        var propInstanceName = prop.Name.ToLowerFirstChar();
+        var propTypeName = writer.GetPrefix() + prop.Name.ToUpperFirstChar();
+        var innerPropTypeName = writer.GetPrefix() + prop.Type.Name.ToUpperFirstChar();
+        var innerPropInstanceName = prop.Type.Name.ToLowerFirstChar();
+        var innerPropTypeRequestName = innerPropTypeName + "RequestBuilder";
+
+#>
+<#=TypeCollectionRequestBuilder(writer, prop)#> <#=entityName#>RequestBuilder::<#=propInstanceName#>() {
+    QUrl url = getRequestUrlWithAdditionalSegment("<#=propInstanceName#>");
+
+    return <#=TypeCollectionRequestBuilder(writer, prop)#>(url, getHttpProvider(), getAuthProvider());
+}
+
+<#
+        if (prop.LongDescriptionContains("queryable"))
+        { 
+#>
+<#=innerPropTypeRequestName#> <#=entityName#>RequestBuilder::<#=propInstanceName#>(const QString& <#=innerPropInstanceName#>) {
+    QUrl url = getRequestUrlWithAdditionalSegment("/<#=propInstanceName#>/" + <#=innerPropInstanceName#>);
+
+    return <#=innerPropTypeRequestName#>(url, getHttpProvider(), getAuthProvider());
+}
+
+<#
+        }
+    }
+}
+foreach (var complexType in entity.GetProperties(longDescriptionMatches:"navigable").Where(prop => prop.Type is OdcmClass))
+{
+#>
+<#=writer.GetPrefix() + complexType.Type.Name.ToUpperFirstChar()#>RequestBuilder <#=entityName#>RequestBuilder::<#=complexType.Name#>() {
+    QUrl url = getRequestUrlWithAdditionalSegment("<#=complexType.Name#>");
+
+    return <#=writer.GetPrefix() + complexType.Type.Name.ToUpperFirstChar()#>RequestBuilder(url, getHttpProvider(), getAuthProvider());
+}
+
+<#
+}
+#>
+
+<#=entityRequestName#> <#=entityName#>RequestBuilder::request() {
+    return requestWithOptions(QList<std::shared_ptr<ODOption>>());
+}
+
+<#=entityRequestName#> <#=entityName#>RequestBuilder::requestWithOptions(const QList<std::shared_ptr<ODOption>>& options) {
+    return <#=entityRequestName#>(getRequestURL(), options, getHttpProvider(), getAuthProvider());
+}
+
+<#
+foreach(var prop in entity.GetProperties(typeName:"Stream"))
+{
+    var propName = prop.Name.ToUpperFirstChar();
+    var propRequestName = writer.GetPrefix() + prop.Class.Name.ToUpperFirstChar() + propName + "Request";
+#>
+/*
+TODO: Stream support
+<#=propRequestName#> <#=entityName#>RequestBuilder::<#=propName.ToLowerFirstChar()#>RequestWithOptions(const QList<std::shared_ptr<ODOption>>& options)
+{
+    QUrl url = getRequestURL();
+    url.setPath(url.path() + "/" + "<#=prop.Name.ToLowerFirstChar()#>");
+    return <#=propRequestName#>(url, options, getHttpProvider(), getAuthProvider());
+}
+
+<#=propRequestName#> <#=entityName#>RequestBuilder::<#=propName.ToLowerFirstChar()#>Request()
+{
+    return <#=propName.ToLowerFirstChar()#>RequestWithOptions(QList<std::shared_ptr<ODOption>>());
+}
+*/
+<#
+
+}
+
+foreach(var func in entity.Methods)
+{
+    var methodName = func.Name.Substring(func.Name.IndexOf('.') + 1).ToLowerFirstChar();
+    var requestBuilderName = writer.GetPrefix() + entity.Name.ToUpperFirstChar() + methodName.ToUpperFirstChar() + "RequestBuilder";
+    if (func.Parameters.Count > 0)
+    {
+#>
+<#=requestBuilderName#> <#=entityName#>RequestBuilder::<#=methodName#>(<#=writer.GetParamsString(func.Parameters)#>)
+{
+<#
+    var stringBuilder = new StringBuilder("return " + requestBuilderName + "(");
+    var firstParam = func.Parameters.First();
+    var spacesString = stringBuilder.ToString() + firstParam.Name.ToUpperFirstChar();
+    // adding the indent...
+    spacesString = spacesString.ToSpaces() + "    ";
+    foreach (var param in func.Parameters)
+    {
+        if (firstParam != param)
+        {
+            stringBuilder.Append(", ");
+        } 
+        stringBuilder.Append(param.Name.ToLowerFirstChar());
+    }
+    stringBuilder.Append(", url, getHttpProvider(), getAuthProvider());"); 
+#>
+    QUrl url = getRequestUrlWithAdditionalSegment("<#=func.Name#>");
+    <#=stringBuilder.ToString()#>
+}
+
+<#
+    }
+    else 
+    {
+#>
+<#=requestBuilderName#> <#=entityName#>RequestBuilder::<#=methodName#>()
+{
+    QUrl url = getRequestUrlWithAdditionalSegment("<#=func.Name#>");
+    return <#=requestBuilderName#>(url, getHttpProvider(), getAuthProvider());
+}
+<#
+
+    }
+
+}
+
+#>
