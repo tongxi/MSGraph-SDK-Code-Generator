@@ -51,7 +51,7 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             interfaceLineBuilder.AppendLine(baseImport);
 
             interfaceLineBuilder.AppendLine().AppendLine().AppendLine(this.GetHeaderDoc(entityType.Name))
-            .AppendFormat("class {0}{1} : {2} {{", this.GetPrefix(), entityType.Name.ToUpperFirstChar(), baseEntity);
+            .AppendFormat("class {0}{1} : public {2} {{", this.GetPrefix(), entityType.Name.ToUpperFirstChar(), baseEntity);
 
             return interfaceLineBuilder.ToString();
         }

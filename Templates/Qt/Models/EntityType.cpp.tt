@@ -12,6 +12,7 @@ var collectionProperties = entity.Properties.Where(prop => prop.IsCollection && 
 #include <QVariant>
 
 void <#=ClassTypeName(writer, entity)#>::read(const QJsonObject& json) {
+    ODObject::read(json);
 <#
 foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
 {
