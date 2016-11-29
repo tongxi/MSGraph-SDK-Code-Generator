@@ -46,6 +46,7 @@ if (func.Parameters.Count > 0)
 {
 #>
 
+    // Comment the member variables since unsed now. Should uncomment them when the VRoom method is supported for QT.
 <#
     foreach (var param in func.Parameters)
     {
@@ -55,8 +56,7 @@ if (func.Parameters.Count > 0)
             paramTypeString = paramTypeString;
         }
 #>
-    <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
-
+    // <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
 <#
     }
 }
