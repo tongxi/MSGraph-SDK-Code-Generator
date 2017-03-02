@@ -114,7 +114,7 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
         public static bool IsSystem(this OdcmType type)
         {
             string t = GetTypeString(type);
-            return (t.Contains("int") || t == "bool" || t == "char" || t == "double" || t == "QString" || t == "QDateTime");
+            return (t.StartsWith("int") || t == "bool" || t == "char" || t == "double" || t == "QString" || t == "QDateTime");
         }
 
         public static bool IsDate(this OdcmProperty prop)
