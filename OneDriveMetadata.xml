@@ -156,20 +156,35 @@
       <ComplexType Name="offCommands">
         <Property Name="download" Type="oneDrive.commandBody" />
       </ComplexType>
-      <ComplexType Name="commandSet" OpenType="true" >
-        <Property Name="delete" Type="oneDrive.DeleteCommand" />
-        <Property Name="move" Type="oneDrive.MoveCommand" />
-        <Property Name="rename" Type="oneDrive.RenameCommand" />
-        <Property Name="share" Type="oneDrive.ShareCommand" />
-        <Property Name="createFolder" Type="oneDrive.CreateFolderCommand" />
-        <Property Name="uploadFile" Type="oneDrive.UploadFileCommand" />
+      <ComplexType Name="deleteCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
       </ComplexType>
-      <ComplexType Name="DeleteCommand" />
-      <ComplexType Name="MoveCommand" />
-      <ComplexType Name="RenameCommand" />
-      <ComplexType Name="ShareCommand" />
-      <ComplexType Name="CreateFolderCommand" />
-      <ComplexType Name="UploadFileCommand" />
+      <ComplexType Name="renameCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="moveCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="uploadFileCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="downloadFileCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="createFolderCommand">
+         <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="createMountedPointCommand">
+         <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
+      <ComplexType Name="officeLensCommand">
+         <Property Name="roles" Type="Collection(Edm.String)" />
+         <Property Name="extensions" Type="Collection(Edm.String)" />
+         <Property Name="LensName" Type="Edm.String" />
+      </ComplexType>
+       <ComplexType Name="inviteCommand">
+          <Property Name="roles" Type="Collection(Edm.String)" />
+      </ComplexType>
       <ComplexType Name="album">
         <Property Name="coverSourceId" Type="Edm.String" />
       </ComplexType>
@@ -197,13 +212,15 @@
         <Property Name="album" Type="oneDrive.album" />
       </ComplexType>
       <ComplexType Name="commands">
-        <Property Name="basic" Type="oneDrive.commandSet" />
-        <Property Name="folder" Type="oneDrive.commandSet" />
-        <Property Name="photo" Type="oneDrive.commandSet" />
-        <Property Name="file" Type="oneDrive.commandSet" />
-        <Property Name="permissions" Type="oneDrive.commandSet" />
-        <Property Name="activators" Type="oneDrive.commandSet" />
-        <Property Name="subscriptions" Type="oneDrive.commandSet" />
+        <Property Name="createFolder" Type="oneDrive.createFolderCommand" />
+        <Property Name="createMountedPoint" Type="oneDrive.createMountedPointCommand" />
+        <Property Name="delete" Type="oneDrive.deleteCommand" />
+        <Property Name="downloadFile" Type="oneDrive.downloadFileCommand" />
+        <Property Name="invite" Type="oneDrive.inviteCommand" />
+        <Property Name="move" Type="oneDrive.moveCommand" />
+        <Property Name="officeLens" Type="oneDrive.officeLensCommand" />
+        <Property Name="rename" Type="oneDrive.renameCommand" />
+        <Property Name="uploadFile" Type="oneDrive.uploadFileCommand" />
       </ComplexType>
       <ComplexType Name="dynamicArray" />
       <ComplexType Name="deleted">
