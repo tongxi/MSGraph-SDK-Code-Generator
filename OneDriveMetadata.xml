@@ -185,6 +185,12 @@
        <ComplexType Name="inviteCommand">
           <Property Name="roles" Type="Collection(Edm.String)" />
       </ComplexType>
+      <ComplexType Name="createLinkCommand">
+        <Property Name="roles" Type="Collection(Edm.String)" />
+        <Property Name="scopes" Type="Collection(Edm.String)" />
+        <Property Name="defaultScope" Type="Edm.String" />
+        <Property Name="types" Type="Collection(Edm.String)" />
+      </ComplexType>
       <ComplexType Name="album">
         <Property Name="coverSourceId" Type="Edm.String" />
       </ComplexType>
@@ -213,6 +219,7 @@
       </ComplexType>
       <ComplexType Name="commands">
         <Property Name="createFolder" Type="oneDrive.createFolderCommand" />
+        <Property Name="createLink" Type="oneDrive.createLinkCommand" />
         <Property Name="createMountedPoint" Type="oneDrive.createMountedPointCommand" />
         <Property Name="delete" Type="oneDrive.deleteCommand" />
         <Property Name="downloadFile" Type="oneDrive.downloadFileCommand" />
