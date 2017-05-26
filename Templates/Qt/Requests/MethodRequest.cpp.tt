@@ -53,6 +53,14 @@ if (func.Parameters.Count > 0)
     :<#=superClass#>(url, options, httpProvider, authProvider)
 {
 <#
+    foreach (var param in func.Parameters)
+    {
+#>
+        m<#=param.Name.ToUpperFirstChar()#> = <#=param.Name.ToLowerFirstChar()#>;
+<#
+    }
+#>
+<#
     // if we are in a function not an action
     if (method == @"GET")
     {
