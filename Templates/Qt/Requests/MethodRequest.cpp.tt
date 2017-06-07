@@ -7,6 +7,7 @@ var entityName = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar();
 var requestType = entityName + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Request";
 var returnType = func.ReturnType != null ? writer.GetPrefix() + func.ReturnType.Name.ToUpperFirstChar() : "void";
 var returnTypeObject = func.ReturnType.AsOdcmClass();
+var asynPostReturnType = (func.IsCollection ) ? "" + TypeCollectionResponse(writer, func.ReturnType) + "": "" + TypeName(writer, func.ReturnType) + "";
 //special method
 if (returnTypeObject != null && returnTypeObject.Properties.Any(prop => prop.IsCollection))
 {
@@ -25,7 +26,7 @@ if (func.LongDescriptionContains("specialCollection"))
 }
 else 
 {
-    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : writer.GetPrefix() + "Request";
+    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : "ODCollectionRequest<" + TypeName(writer, func.ReturnType) + ">";
 }
 #>
 
@@ -50,7 +51,7 @@ if (func.Parameters.Count > 0)
 }
 #>
 <#=requestType#>::<#=requestType#>(<#=methodParams#> const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider)
-    :<#=superClass#>(url, options, httpProvider, authProvider)
+    :<#=superClass#>(url, options, getHeaders(), httpProvider, authProvider)
 {
 <#
     foreach (var param in func.Parameters)
@@ -67,6 +68,7 @@ if (func.Parameters.Count > 0)
         foreach (var param in currentType.AsOdcmMethod().Parameters)
         {
 #>
+		
         if (!<#=param.Name.ToLowerFirstChar()#>.isEmpty()) {
             addOption(std::make_shared<ODQueryOption>("<#=param.Name#>", <#=param.Name.ToLowerFirstChar()#>));
         }
@@ -74,6 +76,61 @@ if (func.Parameters.Count > 0)
         }
     }
 #>
+}
+
+void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
+	QJsonObject jsonBody;
+<#
+    foreach (var param in currentType.AsOdcmMethod().Parameters)
+        {
+		var readFrom = "m" + param.Name.ToUpperFirstChar();
+		if(!param.Type.IsBasicType())
+			{
+			var tempjson = "complexType" + param.Name.ToUpperFirstChar();
+#>
+
+	QJsonObject <#=tempjson#>;
+	m<#=param.Name.ToUpperFirstChar()#>.write(<#=tempjson#>);
+	jsonBody["<#=param.Name#>"] = <#=tempjson#>;
+
+<#
+			}
+		else 
+			{
+			if(param.Type.IsDate()) 
+				{
+#>
+	if (!<#=readFrom#>.isNull()) {
+		jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
+	}
+<#
+				}
+			else if (param.Type.IsString())
+				{
+#>
+	if(!<#=readFrom#>.isEmpty()) {
+		jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
+	}
+<#	
+				}
+			else
+				{
+#>
+	jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
+<#	
+				}
+			}	
+		}
+#>
+	ODCollectionRequest::post(callback, jsonBody);
+}
+
+ODHttpHeaderCollection <#=requestType#>::getHeaders() {
+	ODHttpHeaderCollection headerCollection = {
+			std::make_shared<ODHttpHeader>("Content-Type", "application/json")
+	};
+	
+	return headerCollection;
 }
 
 <#

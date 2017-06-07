@@ -10,6 +10,7 @@ var method = ((func.Verbs & OdcmAllowedVerbs.Get) != OdcmAllowedVerbs.Get) ? "PO
 var isAsync = func.LongDescriptionContains("async");
 var specialCollectionType = writer.GetPrefix() + func.Class.Name.ToUpperFirstChar() + func.Name.Substring(func.Name.IndexOf('.') + 1).ToUpperFirstChar() + "Collection";
 var superClass = "";
+var asynPostReturnType = (func.IsCollection ) ? "" + TypeCollectionResponse(writer, func.ReturnType) + "": "" + TypeName(writer, func.ReturnType) + "";
 if (func.LongDescriptionContains("specialCollection"))
 {
     superClass = "ODCollectionRequest<" + specialCollectionType + ">";
@@ -20,7 +21,7 @@ class <#=specialCollectionType#>;
 }
 else 
 {
-    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : writer.GetPrefix() + "Request";
+    superClass = (func.IsCollection ) ? "ODCollectionRequest<" + TypeCollectionResponse(writer, func.ReturnType) + ">" : "ODCollectionRequest<" + TypeName(writer, func.ReturnType) + ">";
 }
 #>
 #include "ODODataEntities.h"
@@ -40,20 +41,18 @@ if (func.Parameters.Count > 0)
 }
 #>
     <#=requestType#>(<#=methodParams#> const QUrl& url, const QList<std::shared_ptr<ODOption>>& options, std::shared_ptr<ODHttpProvider> httpProvider, std::shared_ptr<ODAuthProvider> authProvider);
+
+    virtual void post(AsyncCallback<<#=asynPostReturnType#>> callback);
 private:
+
+	ODHttpHeaderCollection getHeaders();
+
 <#
 if (func.Parameters.Count > 0)
 {
-#>
-
-<#
     foreach (var param in func.Parameters)
     {
         var paramTypeString = param.Type.GetTypeString();
-        if (param.Type.IsComplex())
-        {
-            paramTypeString = paramTypeString;
-        }
 #>
     <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
 <#

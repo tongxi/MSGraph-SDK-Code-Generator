@@ -52,10 +52,6 @@ if (func.Parameters.Count > 0)
    foreach (var param in func.Parameters)
     {
         var paramTypeString = param.Type.GetTypeString();
-        if (param.Type.IsComplex())
-        {
-            paramTypeString = paramTypeString;
-        }
 #>
     <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
 <#

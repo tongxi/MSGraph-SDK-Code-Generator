@@ -63,6 +63,41 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
         {
             string t = GetTypeString(type);
             return !(t.StartsWith("int") || t == "bool" || t == "char" || t == "double");
+
+        }
+
+        public static bool IsBasicType(this OdcmType type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+            switch (type.Name)
+            {
+                case "String":
+                    return true;
+                case "Int32":
+                    return true;
+                case "Int64":
+                    return true; ;
+                case "Int16":
+                case "Byte":
+                    return true;
+                case "Guid":
+                    return true;
+                case "Double":
+                case "Float":
+                    return true;
+                case "DateTimeOffset":
+                    return true;
+                case "Binary":
+                    return true;
+                case "Boolean":
+                    return true;
+                default:
+                    return false;
+            }
+
         }
 
         public static bool IsComplex(this OdcmProperty property)
@@ -122,6 +157,12 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             return prop.Type.IsDate();
         }
 
+        public static bool IsString(this OdcmType type)
+        {
+            string t = GetTypeString(type);
+            return (t == "QString");
+        }
+
         public static bool IsDate(this OdcmType type)
         {
             string typeString = GetTypeString(type);
@@ -152,6 +193,25 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
         {
             string objectiveCType = property.GetTypeString();
             if (objectiveCType.Equals("int32_t") 
+                || objectiveCType.Equals("int16_t")
+                || objectiveCType.Equals("bool")
+                || objectiveCType.Equals("double")
+                || objectiveCType.Equals("QString")
+                || objectiveCType.Equals("int64_t"))
+            {
+                return "QJsonValue(" + value + ")";
+            }
+            else if (objectiveCType.Equals("QDateTime"))
+            {
+                return "QJsonValue(" + value + ".toString(Qt::ISODate))";
+            }
+            throw new ArgumentException();
+        }
+
+        public static string GetQTTypeToJsonConverter(this OdcmType type, String value)
+        {
+            string objectiveCType = type.GetTypeString();
+            if (objectiveCType.Equals("int32_t")
                 || objectiveCType.Equals("int16_t")
                 || objectiveCType.Equals("bool")
                 || objectiveCType.Equals("double")

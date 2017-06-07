@@ -122,7 +122,7 @@ foreach(var func in entity.Methods)
     }
     stringBuilder.Append(", url, getHttpProvider(), getAuthProvider());"); 
 #>
-    QUrl url = getRequestUrlWithAdditionalSegment("<#=func.Name#>");
+    QUrl url = getRequestUrlWithAdditionalSegment("<#=func.Namespace.Name#>.<#=func.Name#>");
     <#=stringBuilder.ToString()#>
 }
 
