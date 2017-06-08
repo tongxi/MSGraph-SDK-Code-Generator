@@ -59,6 +59,11 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             return property.Type.GetTypeString();
         }
 
+        public static bool IsCollection(this OdcmParameter parameter)
+        {
+            return parameter.IsCollection;
+        }
+
         public static bool IsComplex(this OdcmType type)
         {
             string t = GetTypeString(type);
@@ -156,6 +161,11 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
         {
             return prop.Type.IsDate();
         }
+        public static bool IsDate(this OdcmType type)
+        {
+            string typeString = GetTypeString(type);
+            return typeString.Equals("QDateTime");
+        }
 
         public static bool IsString(this OdcmType type)
         {
@@ -163,10 +173,9 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             return (t == "QString");
         }
 
-        public static bool IsDate(this OdcmType type)
+        public static bool IsString(this OdcmProperty property)
         {
-            string typeString = GetTypeString(type);
-            return typeString.Equals("QDateTime");
+            return property.Type.IsString();
         }
 
         public static string GetToLowerFirstCharName(this OdcmProperty property)

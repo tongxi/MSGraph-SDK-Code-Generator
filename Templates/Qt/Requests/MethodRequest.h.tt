@@ -53,9 +53,18 @@ if (func.Parameters.Count > 0)
     foreach (var param in func.Parameters)
     {
         var paramTypeString = param.Type.GetTypeString();
+		if (param.IsCollection())
+		{
+#>
+    QList<<#=paramTypeString#>> m<#=param.Name.ToUpperFirstChar()#>;
+<#
+		}
+		else 
+		{
 #>
     <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
 <#
+		}
     }
 }
 #>

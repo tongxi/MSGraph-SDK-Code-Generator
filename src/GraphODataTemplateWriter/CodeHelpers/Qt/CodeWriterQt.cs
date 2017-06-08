@@ -306,7 +306,14 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
 
                 if (p.Type.IsComplex())
                 {
-                    param.AppendFormat("const {0}& {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                    if (p.IsCollection())
+                    {
+                        param.AppendFormat("const QList<{0}>& {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                    }
+                    else
+                    {
+                        param.AppendFormat("const {0}& {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                    }
                 }
                 else
                 {

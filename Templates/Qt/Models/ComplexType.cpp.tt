@@ -56,10 +56,19 @@ foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
         m<#=prop.GetToUpperFirstCharName()#>->write(<#=prop.Name#>);
         json["<#=prop.Name#>"] = <#=prop.Name#>;
     }
+<#  } else if (!prop.IsCollection() && prop.IsString()) {
+    var readFrom = "m" + prop.GetToUpperFirstCharName();
+#>
+    if(!<#=readFrom#>.isEmpty()) {json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(readFrom)#>;}
+<#  } else if (!prop.IsCollection() && prop.IsDate()) {
+    var readFrom = "m" + prop.GetToUpperFirstCharName();
+#>
+    if(!<#=readFrom#>.isNull()) {json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(readFrom)#>;}
 <#  } else if (!prop.IsCollection()) {
     var readFrom = "m" + prop.GetToUpperFirstCharName();
 #>
     json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(readFrom)#>;
+
 <#  } else {#>
     QJsonArray <#=prop.Name#>;
     foreach(const <#=prop.Type.GetTypeString()#>& value, m<#=prop.GetToUpperFirstCharName()#>) {

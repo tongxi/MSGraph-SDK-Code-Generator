@@ -438,7 +438,6 @@
         <Parameter Name="recipients" Type="Collection(oneDrive.recipients)" Nullable="false" />
         <Parameter Name="sendInvitation" Type="Edm.Boolean" />
         <Parameter Name="message" Type="Edm.String" />
-        <Parameter Name="expirationDateTime" Type="Edm.DateTimeOffset"/>
         <ReturnType Type="Collection(oneDrive.permission)" Nullable="false" />
       </Action>
       <Function Name="sharedWithMe" IsBound="true">

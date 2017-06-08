@@ -84,9 +84,23 @@ void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
     foreach (var param in currentType.AsOdcmMethod().Parameters)
         {
 		var readFrom = "m" + param.Name.ToUpperFirstChar();
+		var tempjson = "pType" + param.Name.ToUpperFirstChar();
 		if(!param.Type.IsBasicType())
-			{
-			var tempjson = "complexType" + param.Name.ToUpperFirstChar();
+			{			
+			if (param.IsCollection()) 
+				{
+#>
+	QJsonArray jsonArray<#=tempjson#>;
+	for (auto var : m<#=param.Name.ToUpperFirstChar()#>) {
+		QJsonObject <#=tempjson#>;
+		var.write(<#=tempjson#>);
+		jsonArray<#=tempjson#>.append(<#=tempjson#>);
+	}
+	jsonBody["<#=param.Name#>"] = jsonArray<#=tempjson#>;
+<#
+				}
+			else 
+				{
 #>
 
 	QJsonObject <#=tempjson#>;
@@ -94,30 +108,45 @@ void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
 	jsonBody["<#=param.Name#>"] = <#=tempjson#>;
 
 <#
+				}
 			}
 		else 
 			{
-			if(param.Type.IsDate()) 
+			if (param.IsCollection()) 
 				{
+#>
+	QJsonArray jsonArray<#=tempjson#>;
+	for (auto var : m<#=param.Name.ToUpperFirstChar()#>) {
+		QJsonValue <#=tempjson#>(var);
+		jsonArray<#=tempjson#>.append(<#=tempjson#>);
+	}
+	jsonBody["<#=param.Name#>"] = jsonArray<#=tempjson#>;
+<#
+				}
+			else 
+				{
+				if(param.Type.IsDate()) 
+					{
 #>
 	if (!<#=readFrom#>.isNull()) {
 		jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
 	}
 <#
-				}
-			else if (param.Type.IsString())
-				{
+					}
+				else if (param.Type.IsString())
+					{
 #>
 	if(!<#=readFrom#>.isEmpty()) {
 		jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
 	}
 <#	
-				}
-			else
-				{
+					}
+				else
+					{
 #>
 	jsonBody["<#=param.Name#>"] = <#=param.Type.GetQTTypeToJsonConverter(readFrom)#>;
 <#	
+					}
 				}
 			}	
 		}
