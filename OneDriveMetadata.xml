@@ -104,6 +104,7 @@
         </Key>
         <Property Name="autoTagged" Type="oneDrive.autoTagged" />
         <Property Name="name" Type="Edm.String" Nullable="false" />
+        <Property Name="localizedName" Type="Edm.String" Nullable="false" />
       </EntityType>
       <EntityType Name="lens">
         <Key>
