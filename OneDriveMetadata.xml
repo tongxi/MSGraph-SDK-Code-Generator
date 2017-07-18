@@ -276,6 +276,7 @@
         <Property Name="altitude" Type="Edm.Double" />
         <Property Name="latitude" Type="Edm.Double" />
         <Property Name="longitude" Type="Edm.Double" />
+        <Property Name="displayName" Type="Edm.String" />
       </ComplexType>
       <ComplexType Name="openWithSet">
         <Property Name="web" Type="oneDrive.openWithApp" />
