@@ -193,6 +193,15 @@
         <Property Name="defaultScope" Type="Edm.String" />
         <Property Name="types" Type="Collection(Edm.String)" />
       </ComplexType>
+      <ComplexType Name="formatsCommand">
+        <Property Name="dash" Type="oneDrive.formatConverter" />
+        <Property Name="hls" Type="oneDrive.formatConverter" />
+        <Property Name="jpg" Type="oneDrive.formatConverter" />
+        <Property Name="pdf" Type="oneDrive.formatConverter" />
+      </ComplexType>
+      <ComplexType Name="formatConverter">
+        <Property Name="extensions" Type="Collection(Edm.String)" />
+      </ComplexType>
       <ComplexType Name="album">
         <Property Name="coverSourceId" Type="Edm.String" />
       </ComplexType>
@@ -225,6 +234,7 @@
         <Property Name="createLink" Type="oneDrive.createLinkCommand" />
         <Property Name="delete" Type="oneDrive.deleteCommand" />
         <Property Name="download" Type="oneDrive.downloadCommand" />
+        <Property Name="formats" Type="oneDrive.formatsCommand" />
         <Property Name="invite" Type="oneDrive.inviteCommand" />
         <Property Name="move" Type="oneDrive.moveCommand" />
         <Property Name="officeLens" Type="oneDrive.officeLensCommand" />
