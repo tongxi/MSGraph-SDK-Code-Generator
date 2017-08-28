@@ -401,7 +401,7 @@
         <EntitySet Name="drives" EntityType="oneDrive.drive" />
         <EntitySet Name="shares" EntityType="oneDrive.share" />
       </EntityContainer>
-      <Function Name="delta" IsBound="true">
+      <Function Name="oneDrive.delta" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="token" Type="Edm.String" />
         <ReturnType Type="Collection(oneDrive.item)" Nullable="false" />
@@ -410,18 +410,18 @@
         <Parameter Name="bindingParameter" Type="oneDrive.drive" Nullable="false" />
         <ReturnType Type="Collection(oneDrive.item)" Nullable="false" />
       </Function>
-      <Function Name="search" IsBound="true">
+      <Function Name="oneDrive.search" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="q" Type="Edm.String" />
         <ReturnType Type="Collection(oneDrive.item)" Nullable="false" />
       </Function>
-      <Action Name="copy" IsBound="true">
+      <Action Name="oneDrive.copy" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="parentReference" Type="oneDrive.itemReference" />
         <Parameter Name="name" Type="Edm.String" />
         <ReturnType Type="oneDrive.item" Nullable="false" />
       </Action>
-      <Action Name="createLink" IsBound="true">
+      <Action Name="oneDrive.createLink" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="type" Type="Edm.String" Nullable="false" />
         <Parameter Name="scope" Type="Edm.String" />
@@ -434,7 +434,7 @@
         <Parameter Name="name" Type="Edm.String" />
         <ReturnType Type="oneDrive.item" Nullable="false" />
       </Action>
-      <Action Name="invite" IsBound="true">
+      <Action Name="oneDrive.invite" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="requireSignIn" Type="Edm.Boolean" />
         <Parameter Name="roles" Type="Collection(Edm.String)" />
@@ -443,14 +443,20 @@
         <Parameter Name="message" Type="Edm.String" />
         <ReturnType Type="Collection(oneDrive.permission)" Nullable="false" />
       </Action>
-      <Function Name="sharedWithMe" IsBound="true">
+      <Function Name="oneDrive.sharedWithMe" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.drive" Nullable="false" />
         <ReturnType Type="Collection(oneDrive.item)" Nullable="false" />
       </Function>
-      <Action Name="createSession" IsBound="true">
+      <Action Name="oneDrive.createSession" IsBound="true">
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="item" Type="oneDrive.chunkedUploadSessionDescriptor" />
         <ReturnType Type="oneDrive.uploadSession" Nullable="false" />
+      </Action>
+      <Action Name="children" IsBound="true">
+        <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
+        <Parameter Name="name" Type="Edm.String" Nullable="false" />
+        <Parameter Name="folder" Type="oneDrive.folder" Nullable="false"/>
+        <ReturnType Type="oneDrive.item" Nullable="false" />
       </Action>
     </Schema>
   </edmx:DataServices>
