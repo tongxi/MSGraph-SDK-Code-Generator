@@ -55,13 +55,13 @@ if (func.Parameters.Count > 0)
 		if (param.IsCollection())
 		{
 #>
-    QList<<#=paramTypeString#>> m<#=param.Name.ToUpperFirstChar()#>;
+    QList<<#=paramTypeString#>> m<#=writer.GetParamString(param).ToUpperFirstChar()#>;
 <#
 		}
 		else 
 		{
 #>
-    <#=paramTypeString#> m<#=param.Name.ToUpperFirstChar()#>;
+    <#=paramTypeString#> m<#=writer.GetParamString(param).ToUpperFirstChar()#>;
 <#
 		}
     }

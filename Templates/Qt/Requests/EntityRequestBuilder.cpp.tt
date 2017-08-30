@@ -109,7 +109,7 @@ foreach(var func in entity.Methods)
 <#
     var stringBuilder = new StringBuilder("return " + requestBuilderName + "(");
     var firstParam = func.Parameters.First();
-    var spacesString = stringBuilder.ToString() + firstParam.Name.ToUpperFirstChar();
+    var spacesString = stringBuilder.ToString() + writer.GetParamString(firstParam);
     // adding the indent...
     spacesString = spacesString.ToSpaces() + "    ";
     foreach (var param in func.Parameters)
@@ -118,7 +118,7 @@ foreach(var func in entity.Methods)
         {
             stringBuilder.Append(", ");
         } 
-        stringBuilder.Append(param.Name.ToLowerFirstChar());
+        stringBuilder.Append(writer.GetParamString(param));
     }
     stringBuilder.Append(", url, getHttpProvider(), getAuthProvider());"); 
 #>

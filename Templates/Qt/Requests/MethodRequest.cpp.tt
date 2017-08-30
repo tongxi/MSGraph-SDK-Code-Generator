@@ -57,7 +57,7 @@ if (func.Parameters.Count > 0)
     foreach (var param in func.Parameters)
     {
 #>
-        m<#=param.Name.ToUpperFirstChar()#> = <#=param.Name.ToLowerFirstChar()#>;
+        m<#=writer.GetParamString(param).ToUpperFirstChar()#> = <#=writer.GetParamString(param)#>;
 <#
     }
 #>
@@ -70,7 +70,7 @@ if (func.Parameters.Count > 0)
 #>
 		
         if (!<#=param.Name.ToLowerFirstChar()#>.isEmpty()) {
-            addOption(std::make_shared<ODQueryOption>("<#=param.Name#>", <#=param.Name.ToLowerFirstChar()#>));
+            addOption(std::make_shared<ODQueryOption>("<#=param.Name#>", <#=writer.GetParamString(param)#>));
         }
 <#
         }
@@ -83,15 +83,15 @@ void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
 <#
     foreach (var param in currentType.AsOdcmMethod().Parameters)
         {
-		var readFrom = "m" + param.Name.ToUpperFirstChar();
-		var tempjson = "pType" + param.Name.ToUpperFirstChar();
+		var readFrom = "m" + writer.GetParamString(param).ToUpperFirstChar();
+		var tempjson = "pType" + writer.GetParamString(param).ToUpperFirstChar();
 		if(!param.Type.IsBasicType())
 			{			
 			if (param.IsCollection()) 
 				{
 #>
 	QJsonArray jsonArray<#=tempjson#>;
-	for (auto var : m<#=param.Name.ToUpperFirstChar()#>) {
+	for (auto var : m<#=writer.GetParamString(param).ToUpperFirstChar()#>) {
 		QJsonObject <#=tempjson#>;
 		var.write(<#=tempjson#>);
 		jsonArray<#=tempjson#>.append(<#=tempjson#>);
@@ -104,7 +104,7 @@ void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
 #>
 
 	QJsonObject <#=tempjson#>;
-	m<#=param.Name.ToUpperFirstChar()#>.write(<#=tempjson#>);
+	m<#=writer.GetParamString(param).ToUpperFirstChar()#>.write(<#=tempjson#>);
 	jsonBody["<#=param.Name#>"] = <#=tempjson#>;
 
 <#
@@ -116,7 +116,7 @@ void <#=requestType#>::post(AsyncCallback<<#=asynPostReturnType#>> callback) {
 				{
 #>
 	QJsonArray jsonArray<#=tempjson#>;
-	for (auto var : m<#=param.Name.ToUpperFirstChar()#>) {
+	for (auto var : m<#=writer.GetParamString(param).ToUpperFirstChar()#>) {
 		QJsonValue <#=tempjson#>(var);
 		jsonArray<#=tempjson#>.append(<#=tempjson#>);
 	}

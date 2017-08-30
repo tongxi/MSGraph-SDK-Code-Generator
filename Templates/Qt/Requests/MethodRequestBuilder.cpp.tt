@@ -24,7 +24,7 @@ if (func.Parameters.Count > 0)
     foreach (var param in func.Parameters)
     {
 #>
-        m<#=param.Name.ToUpperFirstChar()#> = <#=param.Name.ToLowerFirstChar()#>;
+        m<#=writer.GetParamString(param).ToUpperFirstChar()#> = <#=writer.GetParamString(param)#>;
 <#
     }
 #>
@@ -41,16 +41,16 @@ if (func.Parameters.Count > 0)
 <#
     var stringBuilder = new StringBuilder("return " + requestType + "(");
     var firstParam = func.Parameters.First();
-    var spacesString = stringBuilder.ToString() + firstParam.Name.ToUpperFirstChar();
+    var spacesString = stringBuilder.ToString() + writer.GetParamString(firstParam);
     // adding the indent...
     spacesString = spacesString.ToSpaces() + "    ";
     foreach (var param in func.Parameters)
     {
         if (firstParam != param)
         {
-            stringBuilder.Append(" ,");
+            stringBuilder.Append(", ");
         } 
-        stringBuilder.Append("m"+ param.Name.ToUpperFirstChar());
+        stringBuilder.Append("m"+ writer.GetParamString(param).ToUpperFirstChar());
     }
 
     stringBuilder.Append(", getRequestURL(), options, getHttpProvider(), getAuthProvider());"); 

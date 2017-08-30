@@ -304,24 +304,32 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
                     param.Append(", ");
                 }
 
+                string parameterName = GetParamString(p);
+
                 if (p.Type.IsComplex())
                 {
                     if (p.IsCollection())
                     {
-                        param.AppendFormat("const QList<{0}>& {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                        param.AppendFormat("const QList<{0}>& {1}", p.Type.GetFullType(), parameterName);
                     }
                     else
                     {
-                        param.AppendFormat("const {0}& {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                        param.AppendFormat("const {0}& {1}", p.Type.GetFullType(), parameterName);
                     }
                 }
                 else
                 {
-                    param.AppendFormat("{0} {1}", p.Type.GetFullType(), p.Name.ToLowerFirstChar());
+                    param.AppendFormat("{0} {1}", p.Type.GetFullType(), parameterName);
                 }
             }
 
             return param.ToString();
+        }
+
+        public string GetParamString(OdcmParameter p)
+        {
+            // Remove invalid characters
+            return p.Name.Replace(".", string.Empty).Replace("@", string.Empty).ToLowerFirstChar();
         }
 
         public string GetParamString(OdcmType p) 

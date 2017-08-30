@@ -456,6 +456,7 @@
         <Parameter Name="bindingParameter" Type="oneDrive.item" Nullable="false" />
         <Parameter Name="name" Type="Edm.String" Nullable="false" />
         <Parameter Name="folder" Type="oneDrive.folder" Nullable="false"/>
+        <Parameter Name="@name.conflictBehavior" Type="Edm.String" />
         <ReturnType Type="oneDrive.item" Nullable="false" />
       </Action>
     </Schema>
