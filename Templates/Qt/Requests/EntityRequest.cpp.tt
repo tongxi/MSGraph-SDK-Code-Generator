@@ -38,7 +38,11 @@ void <#=entityName#>::update(const <#=typeName#>& requestData,
     QJsonDocument document(data);
     std::shared_ptr<QByteArray> binaryData = std::make_shared<QByteArray>(document.toJson());
 
-    request("PATCH", std::shared_ptr<QIODevice>(new QBuffer(binaryData.get())), ODHttpHeaderCollection(),
+    ODHttpHeaderCollection headerCollection = {
+            std::make_shared<ODHttpHeader>("Content-Type", "application/json")
+    };
+
+    request("PATCH", std::shared_ptr<QIODevice>(new QBuffer(binaryData.get())), headerCollection,
         [predicate, binaryData](AsyncResult<std::shared_ptr<QNetworkReply>> networkReply) {
             if (networkReply.failed()) {
                 predicate(AsyncResult<<#=typeName#>>(networkReply.getError()));

@@ -22,15 +22,28 @@ foreach(var prop in entity.Properties)
 {
   var type = (prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection()) ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
 #>
-  
-  const <#=type#>& get<#=prop.GetToUpperFirstCharName()#>() const
+
+  std::shared_ptr<const <#=prop.GetFullType()#>> get<#=prop.GetToUpperFirstCharName()#>() const
   {
      return m<#=prop.GetToUpperFirstCharName()#>;
   }
 
   void set<#=prop.GetToUpperFirstCharName()#>(const <#=type#>& value) 
   {
-     m<#=prop.GetToUpperFirstCharName()#> = value;
+<#
+  if ((prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection()))
+  {
+#>
+    m<#=prop.GetToUpperFirstCharName()#> = value;
+<#
+  }
+  else
+  {
+#>
+    m<#=prop.GetToUpperFirstCharName()#> = std::make_shared<<#=prop.GetFullType()#>>(value);
+<#
+  }
+#>
   }
 <#
 }
@@ -41,7 +54,7 @@ private:
 <#
 foreach(var prop in entity.Properties)
 {
-  var type = (prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection()) ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+  var type = "std::shared_ptr<" + prop.GetFullType() + ">";
 #>
   <#=type#> m<#=prop.GetToUpperFirstCharName()#>; 
 <#

@@ -212,7 +212,26 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             }
             else if (objectiveCType.Equals("QDateTime"))
             {
-                return "QJsonValue(" + value + ".toString(Qt::ISODate))";
+                return "QJsonValue(" + value + "->toString(Qt::ISODate))";
+            }
+            throw new ArgumentException();
+        }
+
+        public static string GetQTPointerTypeToJsonConverter(this OdcmProperty type, String value)
+        {
+            string objectiveCType = type.GetTypeString();
+            if (objectiveCType.Equals("int32_t")
+                || objectiveCType.Equals("int16_t")
+                || objectiveCType.Equals("bool")
+                || objectiveCType.Equals("double")
+                || objectiveCType.Equals("QString")
+                || objectiveCType.Equals("int64_t"))
+            {
+                return "QJsonValue(*" + value + ")";
+            }
+            else if (objectiveCType.Equals("QDateTime"))
+            {
+                return "QJsonValue(" + value + "->toString(Qt::ISODate))";
             }
             throw new ArgumentException();
         }
