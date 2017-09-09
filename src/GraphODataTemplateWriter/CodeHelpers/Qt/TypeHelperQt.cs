@@ -178,6 +178,17 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             return property.Type.IsString();
         }
 
+        public static bool IsInteger(this OdcmType type)
+        {
+            string t = GetTypeString(type);
+            return t.StartsWith("int");
+        }
+
+        public static bool IsInteger(this OdcmProperty property)
+        {
+            return property.Type.IsInteger();
+        }
+
         public static string GetToLowerFirstCharName(this OdcmProperty property)
         {
             return property.Name.ToLowerFirstChar();
@@ -212,7 +223,7 @@ namespace Microsoft.Graph.ODataTemplateWriter.CodeHelpers.Qt
             }
             else if (objectiveCType.Equals("QDateTime"))
             {
-                return "QJsonValue(" + value + "->toString(Qt::ISODate))";
+                return "QJsonValue(" + value + ".toString(Qt::ISODate))";
             }
             throw new ArgumentException();
         }
