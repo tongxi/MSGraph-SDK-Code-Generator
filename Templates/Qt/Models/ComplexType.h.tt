@@ -15,26 +15,41 @@ var entity = host.CurrentType.AsOdcmClass();
 
 public:
   virtual ~<#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>(){}
-
 <#
 foreach(var prop in entity.Properties)
 {
   var wrapInPtr = (!prop.IsCollection() && !prop.IsString() && !prop.IsDate());
-  var type = wrapInPtr ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+  var returnType = wrapInPtr ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+  var setType = wrapInPtr && prop.IsComplex() ? "std::shared_ptr<" + prop.GetFullType() + ">" : prop.GetFullType();
+  var varName = "m" + prop.GetToUpperFirstCharName();
 #>
 
-  const <#=type#>& get<#=prop.GetToUpperFirstCharName()#>() const
+  const <#=returnType#>& get<#=prop.GetToUpperFirstCharName()#>() const
   {
-     return m<#=prop.GetToUpperFirstCharName()#>;
+     return <#=varName#>;
   }
 
-  void set<#=prop.GetToUpperFirstCharName()#>(const <#=type#>& value) 
+  void set<#=prop.GetToUpperFirstCharName()#>(const <#=setType#>& value) 
   {
-     m<#=prop.GetToUpperFirstCharName()#> = value;
+<#
+    if (wrapInPtr && !prop.IsComplex())
+    {
+#>
+    <#=varName#> = std::make_shared<<#=prop.GetFullType()#>>(value);
+<#
+    }
+    else
+    {
+#>
+     <#=varName#> = value;
+<#
+    }
+#>
   }
 <#
 }
 #>
+
   virtual void read(const QJsonObject& json);
   virtual void write(QJsonObject& json) const;
 

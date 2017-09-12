@@ -91,11 +91,11 @@ foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
     if (prop.IsComplex() && !prop.IsSystem() && !prop.IsCollection())
     {
 #>
-        if (<#=varName#> != nullptr) {
-            QJsonObject <#=prop.Name#>Object;
-            <#=varName#>->write(<#=prop.Name#>Object);
-            json["<#=prop.Name#>"] = <#=prop.Name#>Object;
-        }
+    if (<#=varName#> != nullptr) {
+        QJsonObject <#=prop.Name#>Object;
+        <#=varName#>->write(<#=prop.Name#>Object);
+        json["<#=prop.Name#>"] = <#=prop.Name#>Object;
+    }
 <#    
     }
     else if (!prop.IsCollection())
@@ -103,53 +103,53 @@ foreach(var prop in entity.Properties.Where(p => !p.Type.Name.Equals("Stream")))
         if (prop.IsString())
         {
 #>
-        if (!<#=varName#>.isEmpty()) {
-            json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(varName)#>;
-        }
+    if (!<#=varName#>.isEmpty()) {
+        json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(varName)#>;
+    }
 <#
         }
         else if (prop.IsDate())
         {
 #>
-        if (!<#=varName#>.isNull()) {
-            json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(varName)#>;
-        }
+    if (!<#=varName#>.isNull()) {
+        json["<#=prop.Name#>"] = <#=prop.GetQTTypeToJsonConverter(varName)#>;
+    }
 <#
         } 
         else 
         {
 #>
-        if (<#=varName#> != nullptr) {
-            json["<#=prop.Name#>"] = <#=prop.GetQTPointerTypeToJsonConverter(varName)#>;
-        }
+    if (<#=varName#> != nullptr) {
+        json["<#=prop.Name#>"] = <#=prop.GetQTPointerTypeToJsonConverter(varName)#>;
+    }
 <#
         }
     } 
     else 
     {
 #>
-        if (!<#=varName#>.isEmpty()) {
-            QJsonArray <#=prop.Name#>Array;
-            for(const auto& value : <#=varName#>) {
+    if (!<#=varName#>.isEmpty()) {
+        QJsonArray <#=prop.Name#>Array;
+        for(const auto& value : <#=varName#>) {
 <#
             if (prop.IsComplex() && !prop.IsSystem())
             {
 #>
-                QJsonObject jsonData;
-                value.write(jsonData);
-                <#=prop.Name#>Array.append(jsonData);
+            QJsonObject jsonData;
+            value.write(jsonData);
+            <#=prop.Name#>Array.append(jsonData);
 <#
             }
             else 
             {
 #>
-                <#=prop.Name#>Array.append(<#=prop.GetQTTypeToJsonConverter("value")#>);
+            <#=prop.Name#>Array.append(<#=prop.GetQTTypeToJsonConverter("value")#>);
 <#
             }
 #>
-            }
-            json["<#=prop.Name#>"] = <#=prop.Name#>Array;
         }
+        json["<#=prop.Name#>"] = <#=prop.Name#>Array;
+    }
 <#
     }
 }
