@@ -354,8 +354,14 @@
         <Property Name="name" Type="Edm.String" />
       </ComplexType>
       <ComplexType Name="video">
+        <Property Name="audioBitsPerSample" Type="Edm.Int32" />
+        <Property Name="audioChannels" Type="Edm.Int32" />
+        <Property Name="audioFormat" Type="Edm.String" />
+        <Property Name="audioSamplesPerSecond" Type="Edm.Int32" />
         <Property Name="bitrate" Type="Edm.Int32" />
         <Property Name="duration" Type="Edm.Int64" />
+        <Property Name="fourCC" Type="Edm.String" />
+        <Property Name="frameRate" Type="Edm.Double" />
         <Property Name="height" Type="Edm.Int32" />
         <Property Name="width" Type="Edm.Int32" />
       </ComplexType>
