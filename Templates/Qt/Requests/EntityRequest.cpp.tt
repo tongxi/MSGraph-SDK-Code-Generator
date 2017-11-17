@@ -31,7 +31,7 @@ void <#=entityName#>::get(AsyncCallback<<#=typeName#>> predicate) {
 }
 
 void <#=entityName#>::update(const <#=typeName#>& requestData,
-                             AsyncCallback<<#=typeName#>>  predicate) {
+                             AsyncCallback<<#=typeName#>> predicate) {
     QJsonObject data;
     requestData.write(data);
 
@@ -58,12 +58,16 @@ void <#=entityName#>::update(const <#=typeName#>& requestData,
     );
 }
 
-void <#=entityName#>::remove()
+void <#=entityName#>::remove(AsyncCallback<int> predicate)
 {
     request("DELETE", nullptr, ODHttpHeaderCollection(),
-        [](AsyncResult<std::shared_ptr<QNetworkReply>> /*networkReply*/)
-        {
-            //TODO: callback in here
+        [predicate](AsyncResult<std::shared_ptr<QNetworkReply>> networkReply) {
+            if (networkReply.failed()) {
+                predicate(AsyncResult<int>(networkReply.getError()));
+                return;
+            }
+
+            predicate(AsyncResult<int>(0));
         }
     );
 }

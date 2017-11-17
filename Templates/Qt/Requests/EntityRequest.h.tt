@@ -49,5 +49,5 @@ public:
     void update(const <#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>& entity,
                 AsyncCallback<<#=writer.GetPrefix() + entity.Name.ToUpperFirstChar()#>> predicate);
 
-    void remove();
+    void remove(AsyncCallback<int> predicate);
 };
